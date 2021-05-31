@@ -6,20 +6,40 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>833</width>
-    <height>571</height>
+    <width>751</width>
+    <height>529</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Поиск</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="lineEdit"/>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QTableWidget" name="tableWidget"/>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>833</width>
+     <width>751</width>
      <height>20</height>
     </rect>
    </property>
@@ -85,6 +105,7 @@
    <addaction name="action_Edit"/>
    <addaction name="action_Delete"/>
    <addaction name="separator"/>
+   <addaction name="action_Exit"/>
   </widget>
   <action name="action_Language">
    <property name="text">
@@ -129,6 +150,10 @@
    </property>
   </action>
   <action name="action_Exit">
+   <property name="icon">
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/img/close_file.png</normaloff>:/icons/img/close_file.png</iconset>
+   </property>
    <property name="text">
     <string>Закрыть</string>
    </property>
