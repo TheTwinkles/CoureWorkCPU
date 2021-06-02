@@ -96,6 +96,7 @@ void MainWindow::openFile(const QString &fileName)
 {
     std::string stdstr_fileName = fileName.toStdString(); //записываем QString строку в STD строку
     std::fstream in_file(stdstr_fileName, std::ios_base::in); //открытие файлового потока
+    //std::fstream in_file("CPU.txt", std::ios_base::in); //открытие файлового потока
     if (!in_file.is_open())
     {
         QMessageBox::warning(this,
