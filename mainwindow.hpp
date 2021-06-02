@@ -16,9 +16,9 @@ public:
     ~MainWindow();
 
 private slots:
-    void newFile();
-    void open();
-    bool save();
+    void action_newFile_triggered();
+    void action_open_triggered();
+    bool action_save_triggered();
     bool may_be_save();
 
     void openFile(const QString& fileName);
