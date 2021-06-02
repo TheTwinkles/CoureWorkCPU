@@ -83,7 +83,6 @@ void CPU::setModel(const string sModel)
 {
     model = sModel;
 }
-
 string CPU::getModel() const
 {
     return model;
@@ -141,4 +140,16 @@ void CPU::setMem_freq(const int sMem_freq)
 int CPU::getMem_freq() const
 {
     return mem_freq;
+}
+
+void CPU::show() const
+{
+    cout << "-----------------------------------" << endl;
+    cout << "Manufacturer: " << manufacturer << "\n "
+         << "Cost: " << cost << "\n "
+         << "Socket: " << socket << "\n "
+         << "Number of cores: " << core_num << "\n "
+         << "Processor speed: " << proc_speed << "\n "
+         << "Memory type: " << mem_type << "\n "
+         << "Memory frequency: " << mem_freq << endl;
 }

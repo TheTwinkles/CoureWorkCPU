@@ -112,7 +112,7 @@ void MainWindow::openFile(const QString &fileName)
 
         std::stringstream file_str(in_str); //создание потока строк
         std::string record; //строка для хранения конкретной записи (;...;)
-        const int num_of_rec = 7; //количество записей в цельной строке из файла
+        const int num_of_rec = 8; //количество записей в цельной строке из файла
         std::string temp[num_of_rec]; //массив строк для хранения записей полученной парсингом
         int j = 0; //счетчик индекса для массива строк
         while (getline(file_str, record, ';')) //парсинг потока строк,
@@ -124,13 +124,16 @@ void MainWindow::openFile(const QString &fileName)
         CPU cpu; //добавляемый объект
         //заполнение полей объекта данными
         cpu.setManufacturer(temp[0]);
-        cpu.setCost(stoi(temp[1]));
-        cpu.setSocket(temp[2]);
-        cpu.setCore_num(stoi(temp[3]));
-        cpu.setProc_speed(stoi(temp[4]));
-        cpu.setMem_type(temp[5]);
-        cpu.setMem_freq(stoi(temp[6]));
+        cpu.setModel(temp[1]);
+        cpu.setCost(stoi(temp[2]));
+        cpu.setSocket(temp[3]);
+        cpu.setCore_num(stoi(temp[4]));
+        cpu.setProc_speed(stoi(temp[5]));
+        cpu.setMem_type(temp[6]);
+        cpu.setMem_freq(stoi(temp[7]));
 
+
+        cpu.show(); //FOR DEBUG!!!
     }
 }
 
