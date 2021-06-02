@@ -16,6 +16,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
     , isUntitled(true)
+    , isOpen(false) //по умолчанию в программе нет открытых файлов
+    , isEdited(false)
+    , list()
+
 {
     ui->setupUi(this);
 
@@ -27,10 +31,13 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::action_save_triggered); //связывание действия сохранения и вызова метода save
 
     connect(ui->action_Exit, &QAction::triggered,
-            this, &MainWindow::close); //связывание дейсвтяи закрытия окна и вызова метода close
+            this, &MainWindow::close); //связывание действия закрытия окна и вызова метода close
 
     connect(ui->action_Exit_All, &QAction::triggered,
             qApp, &QApplication::closeAllWindows);
+
+    //связывание сигнала изменения ячейки в таблице и слота item_edited
+    connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(item_edited(QTableWidgetItem*)));
 
     int static filenum = 0; //номер untitled файла
 
@@ -54,31 +61,45 @@ void MainWindow::action_newFile_triggered()
 //отработка триггера действия открытия файла
 void MainWindow::action_open_triggered()
 {
-    if (may_be_save()) {
+    if (may_be_save())
+    {
         QString str = QFileDialog::getOpenFileName(this);
-        if (!str.isEmpty()) {
+        if (!str.isEmpty())
+        {
             openFile(str);
         }
         setCurrentFile(str);
+
+        createTableHeader();
+
+        for (int i = 0; i < 20; i++)
+            createTableItem(i);
+
+        isOpen = true;
+        if (isOpen)
+        {
+            ui->action_Edit->setEnabled(true);
+            ui->action_Delete->setEnabled(true);
+        }
     }
 }
 
 //отработка триггера действия сохранения
 bool MainWindow::action_save_triggered()
 {
-
+    list.printList();
 }
 
 //"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
 bool MainWindow::may_be_save()
 {
-    if (ui->tableWidget->isWindowModified()) //сработает ли???
+    if (isEdited)
     {
         QMessageBox::StandardButton ret;
         ret = QMessageBox::warning(this,
-                                   tr("Database modified"),
-                                   tr("The document has been modified.\n"
-                                      "Do you want to save your changes?"),
+                                   tr("Изменения  файла"),
+                                   tr("Файл был отредактирован\n"
+                                      "Вы хотите зафиксировать изменения?"),
                                    QMessageBox::Save |
                                    QMessageBox::Discard |
                                    QMessageBox::Cancel);
@@ -90,6 +111,14 @@ bool MainWindow::may_be_save()
     return true;
 }
 
+//если ячейка в таблице была отредактирована - сработает этот метод
+void MainWindow::item_edited(QTableWidgetItem *item)
+{
+    isEdited = true;
+    return;
+}
+
+//метод обрабатывающий файл при открытии
 void MainWindow::openFile(const QString &fileName)
 {
     std::string stdstr_fileName = fileName.toStdString(); //записываем QString строку в STD строку
@@ -98,8 +127,8 @@ void MainWindow::openFile(const QString &fileName)
     if (!in_file.is_open())
     {
         QMessageBox::warning(this,
-                             tr("Read error"),
-                             tr("Cannot read file %1:\n%2")
+                             tr("Ошибка чтения"),
+                             tr("Невозможно прочитать файл %1")
                              .arg(fileName));
     }
     std::string in_str; //цельная строка получаемая из файла
@@ -130,14 +159,60 @@ void MainWindow::openFile(const QString &fileName)
         cpu.setMem_type(temp[6]);
         cpu.setMem_freq(stoi(temp[7]));
 
-
-        cpu.show(); //FOR DEBUG!!!
+        list.addToList(cpu); //добавление позиции в список
     }
+    isOpen = true; //файл считается открытым
 }
 
 bool MainWindow::saveFile(const QString &filename)
 {
 
+}
+
+//создает оглавление таблицы
+void MainWindow::createTableHeader()
+{
+    ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    ui->tableWidget->setColumnCount(8);
+
+    QStringList HorizontalHeader;
+
+    HorizontalHeader.append(tr("Производитель"));
+    HorizontalHeader.append(tr("Модель"));
+    HorizontalHeader.append(tr("Стоимость"));
+    HorizontalHeader.append(tr("Сокет"));
+    HorizontalHeader.append(tr("Количество ядер"));
+    HorizontalHeader.append(tr("Тактовая частота"));
+    HorizontalHeader.append(tr("Тип памяти"));
+    HorizontalHeader.append(tr("Тактовая частота памяти"));
+
+    ui->tableWidget->setHorizontalHeaderLabels(HorizontalHeader);
+}
+
+//создает строку заполненную данными в таблице
+void MainWindow::createTableItem(int i, bool new_item)
+{
+    const int num_of_param = 8;
+
+    if(new_item)
+        ui->tableWidget->setRowCount(ui->tableWidget->rowCount()+1);
+
+    QTableWidgetItem *Item[num_of_param];
+
+    Item[0] = new QTableWidgetItem(QString::fromStdString(list[i]->cpu.getManufacturer()));
+    Item[1] = new QTableWidgetItem(QString::fromStdString(list[i]->cpu.getModel()));
+    Item[2] = new QTableWidgetItem(QString::fromStdString(std::to_string(list[i]->cpu.getCost())));
+    Item[3] = new QTableWidgetItem(QString::fromStdString(list[i]->cpu.getSocket()));
+    Item[4] = new QTableWidgetItem(QString::fromStdString(std::to_string(list[i]->cpu.getCore_num())));
+    Item[5] = new QTableWidgetItem(QString::fromStdString(std::to_string(list[i]->cpu.getProc_speed())));
+    Item[6] = new QTableWidgetItem(QString::fromStdString(list[i]->cpu.getMem_type()));
+    Item[7] = new QTableWidgetItem(QString::fromStdString(std::to_string(list[i]->cpu.getMem_freq())));
+
+    for (int j = 0; j < num_of_param; j++)
+    {
+        ui->tableWidget->setItem(i, j, Item[j]);
+    }
 }
 
 //устанавливает в название окна название текущего открытого файла в этом окна

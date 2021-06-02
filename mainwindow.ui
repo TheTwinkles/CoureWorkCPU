@@ -180,6 +180,9 @@
    </property>
   </action>
   <action name="action_Edit">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/icons/img/edit_property.png</normaloff>:/icons/img/edit_property.png</iconset>
@@ -192,6 +195,9 @@
    </property>
   </action>
   <action name="action_Delete">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="icons.qrc">
      <normaloff>:/icons/img/delete_property.png</normaloff>:/icons/img/delete_property.png</iconset>
