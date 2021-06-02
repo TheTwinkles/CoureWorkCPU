@@ -10,11 +10,13 @@ CONFIG += c++11
 
 SOURCES += \
     cpu.cpp \
+    customlist.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     cpu.hpp \
+    customlist.hpp \
     mainwindow.hpp
 
 FORMS += \
