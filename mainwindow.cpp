@@ -15,9 +15,11 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , isUntitled(true)
+    , isUntitled(true) //по умолчанию файл не имеет конкретного имени
     , isOpen(false) //по умолчанию в программе нет открытых файлов
     , isEdited(false) //по умолчанию файл не считается отредактированным
+    , lastItemCreated(false) //по умолчанию false т.к. первая ячейка считается созданной только
+                              //после отработки createTableItem в первой итерации цикла
     , list()
 
 {
@@ -37,8 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
             qApp, &QApplication::closeAllWindows);
 
     //связывание сигнала изменения ячейки в таблице и слота item_edited
-    connect(ui->tableWidget, SIGNAL(itemChanged(QTableWidgetItem*)), this, SLOT(item_edited(QTableWidgetItem*)));
-
+    connect(ui->tableWidget, &QTableWidget::cellChanged, this, &MainWindow::item_edited);
     int static filenum = 0; //номер untitled файла
 
     currentFileName = QString("untitled%1.txt").arg(filenum++); //название файла при создании окна по умолчанию
@@ -61,22 +62,37 @@ void MainWindow::action_newFile_triggered()
 //отработка триггера действия открытия файла
 void MainWindow::action_open_triggered()
 {
-    if (may_be_save())
+    lastItemCreated = false;
+    if (may_be_save()) //сохранить данные в текущем файле при открытии нового?
     {
-        QString str = QFileDialog::getOpenFileName(this);
-        if (!str.isEmpty())
+        QString str = QFileDialog::getOpenFileName(this); //из диалогового окна открытия файла получаем путь до файла
+        if (!str.isEmpty()) //если путь нормальный
         {
             openFile(str);
         }
-        setCurrentFile(str);
+        else
+        {
+            QMessageBox::StandardButton ret;
+            ret = QMessageBox::warning(this,
+                                       tr("Предупреждение"),
+                                       tr("Вами не был выбран файл"),
+                                       QMessageBox::StandardButton::Ok);
+            if (ret == QMessageBox::StandardButton::Ok) //если пользователь нажал сохранить вызываем триггер save
+                return;
+            return;
+        }
+        setCurrentFile(str); //устанавливаем в названии имя открытого файла
 
-        createTableHeader();
+        createTableHeader(); //создаем заголовок таблицы
 
-        for (int i = 0; i < 20; i++)
-            createTableItem(i);
+        int str_cnt = number_of_datastrings(str); //считаем количество строк в файле
+        for (int i = 0; i < str_cnt; i++)
+            createTableItem(i); //создаем строки с данными в таблице
+        lastItemCreated = true; //последняя ячейка заполнена, значит можно обрабатывать сигналы изменения ячейки
+        isEdited = false; //файл считается неотредактированным
 
-        isOpen = true;
-        if (isOpen)
+        isOpen = true; //файл считается открытым
+        if (isOpen) //если файл считается открытым, то включаем пункты редактировать запись и удалить запись
         {
             ui->action_Edit->setEnabled(true);
             ui->action_Delete->setEnabled(true);
@@ -93,7 +109,7 @@ bool MainWindow::action_save_triggered()
 //"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
 bool MainWindow::may_be_save()
 {
-    if (isEdited)
+    if (isEdited) //если какая-либо ячейка таблицы отредактирована
     {
         QMessageBox::StandardButton ret;
         ret = QMessageBox::warning(this,
@@ -103,19 +119,21 @@ bool MainWindow::may_be_save()
                                    QMessageBox::Save |
                                    QMessageBox::Discard |
                                    QMessageBox::Cancel);
-        if (ret == QMessageBox::Save)
+        if (ret == QMessageBox::Save) //если пользователь нажал сохранить вызываем триггер save
             return action_save_triggered();
-        else if (ret == QMessageBox::Cancel)
+        else if (ret == QMessageBox::Cancel) //если пользователь нажал отмена - отменяем открытие нового файла
             return false;
     }
     return true;
 }
 
 //если ячейка в таблице была отредактирована - сработает этот метод
-void MainWindow::item_edited(QTableWidgetItem *item)
+void MainWindow::item_edited()
 {
-    isEdited = true;
-    return;
+    if(lastItemCreated)
+    {
+        isEdited = true;
+    }
 }
 
 //метод обрабатывающий файл при открытии
@@ -123,7 +141,6 @@ void MainWindow::openFile(const QString &fileName)
 {
     std::string stdstr_fileName = fileName.toStdString(); //записываем QString строку в STD строку
     std::fstream in_file(stdstr_fileName, std::ios_base::in); //открытие файлового потока
-    //std::fstream in_file("CPU.txt", std::ios_base::in); //открытие файлового потока
     if (!in_file.is_open())
     {
         QMessageBox::warning(this,
@@ -241,4 +258,20 @@ void MainWindow::setCurrentFile(const QString &filename)
 QString MainWindow::croppedFileName(const QString &FullFilename)
 {
     return QFileInfo(FullFilename).fileName();
+}
+
+//считывает количество строк в файле с данными
+int MainWindow::number_of_datastrings(const QString& filename)
+{
+    std::string stdstr_fileName = filename.toStdString(); //записываем QString строку в STD строку
+    std::fstream in_file(stdstr_fileName, std::ios_base::in); //открытие файлового потока
+    int ctn = 0; //количество строк в файле
+    std::string text; //считываемая строка
+    while (!in_file.eof()) //цикл для счета количества строк в файле
+    {
+        getline(in_file, text); //считывается строка
+        if(text.size()) //проверяется размер строки
+            ++ctn; //если строка непустая, то количество строк в файле увеличивается
+    }
+    return ctn; //возвращаем кол-во строк в файле
 }

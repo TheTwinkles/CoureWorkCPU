@@ -24,7 +24,7 @@ private slots:
     bool action_save_triggered();
     bool may_be_save();
 
-    void item_edited(QTableWidgetItem*); //слот для проверки была ли отредактирована ячейка
+    void item_edited(); //слот для проверки была ли отредактирована ячейка
 
 
     void openFile(const QString& fileName);
@@ -36,14 +36,17 @@ private:
 
     bool isUntitled; //Файл без названия
     bool isOpen; //Файл открыт
-    bool isEdited;
+    bool isEdited; //Файл неотредактирован
+    bool lastItemCreated; //Из файла считана последняя ячейка
 
     customList list; //список для хранения данных
 
-    void createTableHeader();
-    void createTableItem(int i, bool new_item = true);
+    void createTableHeader(); //создание заголовка таблицы
+    void createTableItem(int i, bool new_item = true); //создание записи в таблице
 
     void setCurrentFile(const QString& filename);
     QString croppedFileName(const QString& FullFilename);
+
+    int number_of_datastrings(const QString& filename); // счет кол-ва строк с данными в файле
 };
 #endif // MAINWINDOW_HPP
