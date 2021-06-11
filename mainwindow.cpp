@@ -68,9 +68,9 @@ void MainWindow::action_open_triggered()
         QString str = QFileDialog::getOpenFileName(this); //из диалогового окна открытия файла получаем путь до файла
         if (!str.isEmpty()) //если путь нормальный
         {
-            openFile(str);
+            openFile(str); //считываем данные из файла
         }
-        else
+        else //иначе выводим предупреждение
         {
             QMessageBox::StandardButton ret;
             ret = QMessageBox::warning(this,
@@ -103,19 +103,27 @@ void MainWindow::action_open_triggered()
 //отработка триггера действия сохранения
 bool MainWindow::action_save_triggered()
 {
-    if (isUntitled)
+    if (isUntitled) //если у файла нет названия
     {
-        QString fileName = QFileDialog::getSaveFileName(this,
+        QString fileName = QFileDialog::getSaveFileName(this, //выбираем файл в который нужно сохранить(название файла)
                                                         tr("Сохранить как"),
                                                         currentFileName);
-        if (fileName.isEmpty())
-            return false;
+        if (fileName.isEmpty()) //если файл не выбрали выводим предупреждение
+        {
+            QMessageBox::StandardButton ret;
+            ret = QMessageBox::warning(this,
+                                       tr("Предупреждение"),
+                                       tr("Вами не был выбран файл"),
+                                       QMessageBox::StandardButton::Ok);
+            if (ret == QMessageBox::StandardButton::Ok) //если пользователь нажал сохранить вызываем триггер save
+                return false;
+        }
 
-        return saveFile(fileName);
+        return saveFile(fileName); //передаем в сохранение имя выбранного файла
     }
     else
     {
-        return saveFile(currentFileName);
+        return saveFile(currentFileName); //иначе сохраняем файл с текущим названием
     }
 }
 
@@ -222,9 +230,10 @@ bool MainWindow::saveFile(const QString &fileName)
                  << temp->cpu.getCore_num() << ';'
                  << temp->cpu.getProc_speed() << ';'
                  << temp->cpu.getMem_type() << ';'
-                 << temp->cpu.getMem_freq() << ";\n";
+                 << temp->cpu.getMem_freq() << ';' << '\n';
         temp = temp->next; //записываем адрес предыдущего элемента
     }
+    isEdited = false;
     out_file.close();
     return true;
 }
