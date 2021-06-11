@@ -222,7 +222,7 @@ bool MainWindow::saveFile(const QString &fileName)
                  << temp->cpu.getCore_num() << ';'
                  << temp->cpu.getProc_speed() << ';'
                  << temp->cpu.getMem_type() << ';'
-                 << temp->cpu.getMem_freq() << ';';
+                 << temp->cpu.getMem_freq() << ";\n";
         temp = temp->next; //записываем адрес предыдущего элемента
     }
     out_file.close();
