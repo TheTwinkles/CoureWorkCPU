@@ -56,13 +56,3 @@ void customList::addToList(CPU &adCPU)
         tail = temp; //голова=хвост=тот элемент, что сейчас добавили
     }
 }
-
-void customList::printList() const
-{
-    Item *temp = head; //временный указатель на адрес последнего элемента
-    while (temp!=NULL) //поднимаемся пока не встретим конец(начало)
-    {
-        temp->cpu.show();
-        temp = temp->next; //записываем адрес предыдущего элемента
-    }
-}

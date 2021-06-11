@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , isUntitled(true)
     , isOpen(false) //по умолчанию в программе нет открытых файлов
-    , isEdited(false)
+    , isEdited(false) //по умолчанию файл не считается отредактированным
     , list()
 
 {
@@ -87,7 +87,7 @@ void MainWindow::action_open_triggered()
 //отработка триггера действия сохранения
 bool MainWindow::action_save_triggered()
 {
-    list.printList();
+
 }
 
 //"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
