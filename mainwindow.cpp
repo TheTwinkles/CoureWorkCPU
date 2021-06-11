@@ -103,7 +103,20 @@ void MainWindow::action_open_triggered()
 //отработка триггера действия сохранения
 bool MainWindow::action_save_triggered()
 {
+    if (isUntitled)
+    {
+        QString fileName = QFileDialog::getSaveFileName(this,
+                                                        tr("Сохранить как"),
+                                                        currentFileName);
+        if (fileName.isEmpty())
+            return false;
 
+        return saveFile(fileName);
+    }
+    else
+    {
+        return saveFile(currentFileName);
+    }
 }
 
 //"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
@@ -178,12 +191,42 @@ void MainWindow::openFile(const QString &fileName)
 
         list.addToList(cpu); //добавление позиции в список
     }
+    in_file.close();
     isOpen = true; //файл считается открытым
 }
 
-bool MainWindow::saveFile(const QString &filename)
+bool MainWindow::saveFile(const QString &fileName)
 {
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly | QFile::Text))
+    {
+        QMessageBox::warning(this,
+                             tr("Ошибка"),
+                             tr("Нельзя записать в файл %1:\n%2")
+                             .arg(fileName)
+                             .arg(file.errorString()));
+        return false;
+    }
 
+    std::string stdstr_fileName = fileName.toStdString(); //записываем QString строку в STD строку
+    std::fstream out_file(stdstr_fileName, std::ios_base::out); //открываем файл на вывод
+
+    customList::Item *temp = list.head;
+    while (temp != nullptr) //поднимаемся пока не встретим конец
+    {
+        //запись данных в файл
+        out_file << temp->cpu.getManufacturer() << ';'
+                 << temp->cpu.getModel() << ';'
+                 << temp->cpu.getCost() << ';'
+                 << temp->cpu.getSocket() << ';'
+                 << temp->cpu.getCore_num() << ';'
+                 << temp->cpu.getProc_speed() << ';'
+                 << temp->cpu.getMem_type() << ';'
+                 << temp->cpu.getMem_freq() << ';';
+        temp = temp->next; //записываем адрес предыдущего элемента
+    }
+    out_file.close();
+    return true;
 }
 
 //создает оглавление таблицы
