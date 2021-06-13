@@ -35,9 +35,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->action_Exit, &QAction::triggered,
             this, &MainWindow::close); //связывание действия закрытия окна и вызова метода close
-
     connect(ui->action_Exit_All, &QAction::triggered,
             qApp, &QApplication::closeAllWindows);
+
+    connect(ui->action_Add, &QAction::triggered,
+            this, &MainWindow::action_add_triggered); //связывание действия добавления данных и вызов метода add
 
     //связывание сигнала изменения ячейки в таблице и слота item_edited
     connect(ui->tableWidget, &QTableWidget::cellChanged, this, &MainWindow::item_edited);
@@ -130,9 +132,25 @@ bool MainWindow::action_save_triggered()
 
 void MainWindow::action_add_triggered()
 {
-    DialogWindow dlgwin;
-    dlgwin.exec();
+    DialogWindow dlgwin; //создание объекта диалоговога окна
+    dlgwin.exec(); //запускаем диалоговое окна
 
+    if(dlgwin.result() == DialogWindow::Rejected) return; //если пользователь нажимает cancel
+
+    CPU new_cpu;
+
+    new_cpu.setManufacturer(dlgwin.getManufacturer());
+    new_cpu.setModel(dlgwin.getModel());
+    new_cpu.setCost(dlgwin.getCost());
+    new_cpu.setSocket(dlgwin.getSocket());
+    new_cpu.setCore_num(dlgwin.getCore_num());
+    new_cpu.setProc_speed(dlgwin.getProc_speed());
+    new_cpu.setMem_type(dlgwin.getMem_type());
+    new_cpu.setMem_freq(dlgwin.getMem_freq());
+
+    list.addToList(new_cpu);
+
+    createTableItem(ui->tableWidget->rowCount());
 }
 
 //"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"

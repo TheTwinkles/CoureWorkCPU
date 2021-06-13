@@ -35,7 +35,14 @@
     </widget>
    </item>
    <item row="2" column="1">
-    <widget class="QSpinBox" name="spin_cost"/>
+    <widget class="QSpinBox" name="spin_cost">
+     <property name="maximum">
+      <number>10000000</number>
+     </property>
+     <property name="singleStep">
+      <number>10</number>
+     </property>
+    </widget>
    </item>
    <item row="3" column="0">
     <widget class="QLabel" name="lab_socket">
@@ -55,7 +62,14 @@
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QSpinBox" name="spin_numcor"/>
+    <widget class="QSpinBox" name="spin_numcor">
+     <property name="maximum">
+      <number>64</number>
+     </property>
+     <property name="singleStep">
+      <number>2</number>
+     </property>
+    </widget>
    </item>
    <item row="5" column="0">
     <widget class="QLabel" name="lab_prc_spd">
@@ -75,10 +89,24 @@
     <widget class="QLineEdit" name="edit_mem_type"/>
    </item>
    <item row="5" column="1">
-    <widget class="QSpinBox" name="spin_prc_spd"/>
+    <widget class="QSpinBox" name="spin_prc_spd">
+     <property name="maximum">
+      <number>10000</number>
+     </property>
+     <property name="singleStep">
+      <number>10</number>
+     </property>
+    </widget>
    </item>
    <item row="7" column="1">
-    <widget class="QSpinBox" name="spin_mem_freq"/>
+    <widget class="QSpinBox" name="spin_mem_freq">
+     <property name="maximum">
+      <number>10000</number>
+     </property>
+     <property name="singleStep">
+      <number>10</number>
+     </property>
+    </widget>
    </item>
    <item row="7" column="0">
     <widget class="QLabel" name="lab_mem_freq">
@@ -100,7 +128,7 @@
       <item>
        <widget class="QPushButton" name="button_cancel">
         <property name="text">
-         <string>Cancel</string>
+         <string>Отмена</string>
         </property>
        </widget>
       </item>
