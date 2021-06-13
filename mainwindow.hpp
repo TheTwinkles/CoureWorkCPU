@@ -24,12 +24,16 @@ private slots:
     bool action_save_triggered();
 
     void action_add_triggered();
+    void action_edit_triggered();
 
     void item_edited(); //слот для проверки была ли отредактирована ячейка
 
 private:
     Ui::MainWindow *ui;
+
     QString currentFileName; //Имя открытого файла
+
+    int str_count;
 
     bool isUntitled; //Файл без названия
     bool isOpen; //Файл открыт

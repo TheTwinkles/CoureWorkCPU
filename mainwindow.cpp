@@ -12,10 +12,12 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QInputDialog>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , str_count(0)
     , isUntitled(true) //по умолчанию файл не имеет конкретного имени
     , isOpen(false) //по умолчанию в программе нет открытых файлов
     , isEdited(false) //по умолчанию файл не считается отредактированным
@@ -40,6 +42,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->action_Add, &QAction::triggered,
             this, &MainWindow::action_add_triggered); //связывание действия добавления данных и вызов метода add
+    connect(ui->action_Edit, &QAction::triggered,
+            this, &MainWindow::action_edit_triggered); //связывание действия редактирования данных и вызов метода edit
+
 
     //связывание сигнала изменения ячейки в таблице и слота item_edited
     connect(ui->tableWidget, &QTableWidget::cellChanged, this, &MainWindow::item_edited);
@@ -88,8 +93,8 @@ void MainWindow::action_open_triggered()
 
         createTableHeader(); //создаем заголовок таблицы
 
-        int str_cnt = number_of_datastrings(str); //считаем количество строк в файле
-        for (int i = 0; i < str_cnt; i++)
+        str_count = number_of_datastrings(str); //считаем количество строк в файле
+        for (int i = 0; i < str_count; i++)
             createTableItem(i); //создаем строки с данными в таблице
         lastItemCreated = true; //последняя ячейка заполнена, значит можно обрабатывать сигналы изменения ячейки
         isEdited = false; //файл считается неотредактированным
@@ -130,15 +135,17 @@ bool MainWindow::action_save_triggered()
     }
 }
 
+//отработка триггера действия добавления данных
 void MainWindow::action_add_triggered()
 {
     DialogWindow dlgwin; //создание объекта диалоговога окна
-    dlgwin.exec(); //запускаем диалоговое окна
+    dlgwin.exec(); //запускаем диалоговое окно
 
     if(dlgwin.result() == DialogWindow::Rejected) return; //если пользователь нажимает cancel
 
-    CPU new_cpu;
+    CPU new_cpu; //создаем объект добавляемого процессора
 
+    //заполняем поля объекта данными из диалогового окна
     new_cpu.setManufacturer(dlgwin.getManufacturer());
     new_cpu.setModel(dlgwin.getModel());
     new_cpu.setCost(dlgwin.getCost());
@@ -148,9 +155,50 @@ void MainWindow::action_add_triggered()
     new_cpu.setMem_type(dlgwin.getMem_type());
     new_cpu.setMem_freq(dlgwin.getMem_freq());
 
-    list.addToList(new_cpu);
+    list.addToList(new_cpu); //добавляем новый процессор в список
 
-    createTableItem(ui->tableWidget->rowCount());
+    str_count += 1; //увеличиваем кол-во позиций в списке
+
+    createTableItem(ui->tableWidget->rowCount()); //добавляем новый процессор в таблицу
+}
+
+//отработка триггера действия редактирования данных
+void MainWindow::action_edit_triggered()
+{
+    bool ok; //переменная в которую QInputDialog запишет нажатие на кнопку отмены или подтверждения
+    int element_pos = QInputDialog::getInt(this, QString::fromUtf8("Ввод"),
+                                           QString::fromUtf8("Введите номер строки в таблице:"),
+                                           1, 1, str_count, 1, &ok) - 1;
+    //в element_pos записывается вводимый пользователем номер строки (-1 т.к. в списке счет идет от 0)
+
+    if(!ok) return; //если не было подтверждения в QInputDialog, то отменяем изменение
+
+    DialogWindow dlgwin; //создаем объект диалогового окна
+
+    //заполняем поля диалогового окна данными выбраной строки в таблице
+    dlgwin.setManufacturer(list[element_pos]->cpu.getManufacturer());
+    dlgwin.setModel(list[element_pos]->cpu.getModel());
+    dlgwin.setCost(list[element_pos]->cpu.getCost());
+    dlgwin.setSocket(list[element_pos]->cpu.getSocket());
+    dlgwin.setCore_num(list[element_pos]->cpu.getCore_num());
+    dlgwin.setProc_speed(list[element_pos]->cpu.getProc_speed());
+    dlgwin.setMem_type(list[element_pos]->cpu.getMem_type());
+    dlgwin.setMem_freq(list[element_pos]->cpu.getMem_freq());
+
+    dlgwin.exec(); //запускаем диалоговое окно
+    if(dlgwin.result() == DialogWindow::Rejected) return; //если пользователь нажал отмена, то отменяем изменение
+
+    //устанавливаем новые значения
+    list[element_pos]->cpu.setManufacturer(dlgwin.getManufacturer());
+    list[element_pos]->cpu.setModel(dlgwin.getModel());
+    list[element_pos]->cpu.setCost(dlgwin.getCost());
+    list[element_pos]->cpu.setSocket(dlgwin.getSocket());
+    list[element_pos]->cpu.setCore_num(dlgwin.getCore_num());
+    list[element_pos]->cpu.setProc_speed(dlgwin.getProc_speed());
+    list[element_pos]->cpu.setMem_type(dlgwin.getMem_type());
+    list[element_pos]->cpu.setMem_freq(dlgwin.getMem_freq());
+
+    createTableItem(element_pos, false); //обновляем строку в таблице
 }
 
 //"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
