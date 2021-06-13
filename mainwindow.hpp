@@ -25,6 +25,7 @@ private slots:
 
     void action_add_triggered();
     void action_edit_triggered();
+    void action_delete_triggered();
 
     void item_edited(); //слот для проверки была ли отредактирована ячейка
 

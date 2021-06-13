@@ -44,7 +44,8 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::action_add_triggered); //связывание действия добавления данных и вызов метода add
     connect(ui->action_Edit, &QAction::triggered,
             this, &MainWindow::action_edit_triggered); //связывание действия редактирования данных и вызов метода edit
-
+    connect(ui->action_Delete, &QAction::triggered,
+            this, &MainWindow::action_delete_triggered); //связывание действия удаления данных и вызов метода delete
 
     //связывание сигнала изменения ячейки в таблице и слота item_edited
     connect(ui->tableWidget, &QTableWidget::cellChanged, this, &MainWindow::item_edited);
@@ -82,8 +83,8 @@ void MainWindow::action_open_triggered()
         {
             QMessageBox::StandardButton ret;
             ret = QMessageBox::warning(this,
-                                       tr("Предупреждение"),
-                                       tr("Вами не был выбран файл"),
+                                       tr("Warning"),
+                                       tr("You have not selected a file"),
                                        QMessageBox::StandardButton::Ok);
             if (ret == QMessageBox::StandardButton::Ok) //если пользователь нажал сохранить вызываем триггер save
                 return;
@@ -114,14 +115,14 @@ bool MainWindow::action_save_triggered()
     if (isUntitled) //если у файла нет названия
     {
         QString fileName = QFileDialog::getSaveFileName(this, //выбираем файл в который нужно сохранить(название файла)
-                                                        tr("Сохранить как"),
+                                                        tr("Save as"),
                                                         currentFileName);
         if (fileName.isEmpty()) //если файл не выбрали выводим предупреждение
         {
             QMessageBox::StandardButton ret;
             ret = QMessageBox::warning(this,
-                                       tr("Предупреждение"),
-                                       tr("Вами не был выбран файл"),
+                                       tr("Warning"),
+                                       tr("You have not selected a file"),
                                        QMessageBox::StandardButton::Ok);
             if (ret == QMessageBox::StandardButton::Ok) //если пользователь нажал сохранить вызываем триггер save
                 return false;
@@ -138,8 +139,11 @@ bool MainWindow::action_save_triggered()
 //отработка триггера действия добавления данных
 void MainWindow::action_add_triggered()
 {
+    isEdited = true;
+    if(!lastItemCreated) createTableHeader();
     DialogWindow dlgwin; //создание объекта диалоговога окна
     dlgwin.exec(); //запускаем диалоговое окно
+    dlgwin.setWindowTitle(tr("Add"));
 
     if(dlgwin.result() == DialogWindow::Rejected) return; //если пользователь нажимает cancel
 
@@ -160,20 +164,25 @@ void MainWindow::action_add_triggered()
     str_count += 1; //увеличиваем кол-во позиций в списке
 
     createTableItem(ui->tableWidget->rowCount()); //добавляем новый процессор в таблицу
+
+    ui->action_Edit->setEnabled(true);
+    ui->action_Delete->setEnabled(true);
 }
 
 //отработка триггера действия редактирования данных
 void MainWindow::action_edit_triggered()
 {
+    isEdited = true;
     bool ok; //переменная в которую QInputDialog запишет нажатие на кнопку отмены или подтверждения
-    int element_pos = QInputDialog::getInt(this, QString::fromUtf8("Ввод"),
-                                           QString::fromUtf8("Введите номер строки в таблице:"),
+    int element_pos = QInputDialog::getInt(this, QString::fromUtf8("Input"),
+                                           QString::fromUtf8("Enter the line number in the table:"),
                                            1, 1, str_count, 1, &ok) - 1;
     //в element_pos записывается вводимый пользователем номер строки (-1 т.к. в списке счет идет от 0)
 
     if(!ok) return; //если не было подтверждения в QInputDialog, то отменяем изменение
 
     DialogWindow dlgwin; //создаем объект диалогового окна
+    dlgwin.setWindowTitle(tr("Edit"));
 
     //заполняем поля диалогового окна данными выбраной строки в таблице
     dlgwin.setManufacturer(list[element_pos]->cpu.getManufacturer());
@@ -201,6 +210,24 @@ void MainWindow::action_edit_triggered()
     createTableItem(element_pos, false); //обновляем строку в таблице
 }
 
+void MainWindow::action_delete_triggered()
+{
+    isEdited = true;
+    bool ok; //переменная в которую QInputDialog запишет нажатие на кнопку отмены или подтверждения
+    int element_pos = QInputDialog::getInt(this, QString::fromUtf8("Input"),
+                                           QString::fromUtf8("Enter the line number in the table:"),
+                                           1, 1, str_count, 1, &ok) - 1;
+    //в element_pos записывается вводимый пользователем номер строки (-1 т.к. в списке счет идет от 0)
+
+    if(!ok) return; //если не было подтверждения в QInputDialog, то отменяем изменение
+
+    list.deleteFromList(element_pos);
+
+    str_count -= 1;
+
+    ui->tableWidget->removeRow(element_pos);
+}
+
 //"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
 bool MainWindow::may_be_save()
 {
@@ -208,9 +235,9 @@ bool MainWindow::may_be_save()
     {
         QMessageBox::StandardButton ret;
         ret = QMessageBox::warning(this,
-                                   tr("Изменения  файла"),
-                                   tr("Файл был отредактирован\n"
-                                      "Вы хотите зафиксировать изменения?"),
+                                   tr("File changed"),
+                                   tr("The file has been edited\n"
+                                      "Do you want to commit your changes?"),
                                    QMessageBox::Save |
                                    QMessageBox::Discard |
                                    QMessageBox::Cancel);
@@ -239,8 +266,8 @@ void MainWindow::openFile(const QString &fileName)
     if (!in_file.is_open())
     {
         QMessageBox::warning(this,
-                             tr("Ошибка чтения"),
-                             tr("Невозможно прочитать файл %1")
+                             tr("Read error"),
+                             tr("Unable to read file %1")
                              .arg(fileName));
     }
     std::string in_str; //цельная строка получаемая из файла
@@ -284,8 +311,8 @@ bool MainWindow::saveFile(const QString &fileName)
     if (!file.open(QFile::WriteOnly | QFile::Text))
     {
         QMessageBox::warning(this,
-                             tr("Ошибка"),
-                             tr("Нельзя записать в файл %1:\n%2")
+                             tr("Error"),
+                             tr("Can't write to file %1:\n%2")
                              .arg(fileName)
                              .arg(file.errorString()));
         return false;
@@ -322,14 +349,14 @@ void MainWindow::createTableHeader()
 
     QStringList HorizontalHeader;
 
-    HorizontalHeader.append(tr("Производитель"));
-    HorizontalHeader.append(tr("Модель"));
-    HorizontalHeader.append(tr("Стоимость"));
-    HorizontalHeader.append(tr("Сокет"));
-    HorizontalHeader.append(tr("Количество ядер"));
-    HorizontalHeader.append(tr("Тактовая частота"));
-    HorizontalHeader.append(tr("Тип памяти"));
-    HorizontalHeader.append(tr("Тактовая частота памяти"));
+    HorizontalHeader.append(tr("Manufacturer"));
+    HorizontalHeader.append(tr("Model"));
+    HorizontalHeader.append(tr("Cost"));
+    HorizontalHeader.append(tr("Socket"));
+    HorizontalHeader.append(tr("Number of cores"));
+    HorizontalHeader.append(tr("Clock frequency"));
+    HorizontalHeader.append(tr("Memory type"));
+    HorizontalHeader.append(tr("Memory clock speed"));
 
     ui->tableWidget->setHorizontalHeaderLabels(HorizontalHeader);
 }

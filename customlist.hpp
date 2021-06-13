@@ -55,6 +55,8 @@ public:
      */
     void addToList(CPU &adCPU);
 
+    void deleteFromList(int i);
+
 };
 
 #endif // CUSTOMLIST_HPP

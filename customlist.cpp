@@ -56,3 +56,27 @@ void customList::addToList(CPU &adCPU)
         tail = temp; //голова=хвост=тот элемент, что сейчас добавили
     }
 }
+
+void customList::deleteFromList(int i)
+{
+    Item* cur = this->operator[](i);
+    if (cur==nullptr) return;
+    Item* r;
+    if ((r = cur->prev) != nullptr)
+    {
+        r->next = cur->next;
+    }
+    else
+    {
+        head = cur->next;
+    }
+    if ((r = cur->next) != nullptr)
+    {
+        r->prev = cur->prev;
+    }
+    else
+    {
+        tail = cur->prev;
+    }
+    cur->~Item();
+}
