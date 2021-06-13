@@ -47,6 +47,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Delete, &QAction::triggered,
             this, &MainWindow::action_delete_triggered); //связывание действия удаления данных и вызов метода delete
 
+    connect(ui->lineEdit, SIGNAL(editingFinished()),
+            this, SLOT(lineEditSearch_editingFinished()));
+
     //связывание сигнала изменения ячейки в таблице и слота item_edited
     connect(ui->tableWidget, &QTableWidget::cellChanged, this, &MainWindow::item_edited);
     int static filenum = 0; //номер untitled файла
@@ -210,6 +213,7 @@ void MainWindow::action_edit_triggered()
     createTableItem(element_pos, false); //обновляем строку в таблице
 }
 
+//отработка триггера действия удаления данных
 void MainWindow::action_delete_triggered()
 {
     isEdited = true;
@@ -226,6 +230,40 @@ void MainWindow::action_delete_triggered()
     str_count -= 1;
 
     ui->tableWidget->removeRow(element_pos);
+}
+
+void MainWindow::lineEditSearch_editingFinished()
+{
+    for(int i=ui->tableWidget->rowCount();i>=0;i--)
+    {
+        ui->tableWidget->removeRow(i);
+    }
+    QString trg = ui->lineEdit->text();
+    bool is_int;
+    int val = trg.toInt(&is_int);
+    for (int i = 0; i < str_count; i++)
+    {
+        if ((!is_int&&QString::fromStdString(list[i]->cpu.getManufacturer()).contains(trg))
+                || (!is_int&&QString::fromStdString(list[i]->cpu.getModel()).contains(trg))
+                || (is_int&&(list[i]->cpu.getCost()==val))
+                || (!is_int&&QString::fromStdString(list[i]->cpu.getSocket()).contains(trg))
+                || (is_int&&(list[i]->cpu.getCore_num()==val))
+                || (is_int&&(list[i]->cpu.getProc_speed()==val))
+                || (!is_int&&QString::fromStdString(list[i]->cpu.getMem_type()).contains(trg))
+                || (is_int&&(list[i]->cpu.getMem_freq()==val)))
+                    createTableItem(i);
+    }
+
+
+    /* if (QString::fromStdString(list[i]->cpu.getManufacturer()).contains(trg)
+                || QString::fromStdString(list[i]->cpu.getModel()).contains(ui->lineEdit->text())
+                || is_int?(list[i]->cpu.getCost()==val):( QString::number(list[i]->cpu.getCost()).contains(ui->lineEdit->text()))
+                || QString::fromStdString(list[i]->cpu.getSocket()).contains(ui->lineEdit->text())
+                || is_int?(list[i]->cpu.getCore_num()==val):(QString::number(list[i]->cpu.getCore_num()).contains(ui->lineEdit->text()))
+                || is_int?(list[i]->cpu.getProc_speed()==val):(QString::number(list[i]->cpu.getProc_speed()).contains(ui->lineEdit->text()))
+                || QString::fromStdString(list[i]->cpu.getMem_type()).contains(ui->lineEdit->text())
+                || is_int?(list[i]->cpu.getMem_freq()==val):(QString::number(list[i]->cpu.getMem_freq()).contains(ui->lineEdit->text())))
+                    createTableItem(i);*/
 }
 
 //"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
@@ -322,7 +360,7 @@ bool MainWindow::saveFile(const QString &fileName)
     std::fstream out_file(stdstr_fileName, std::ios_base::out); //открываем файл на вывод
 
     customList::Item *temp = list.head;
-    while (temp != nullptr) //поднимаемся пока не встретим конец
+    while (temp != nullptr) //опускаемся пока не встретим конец
     {
         //запись данных в файл
         out_file << temp->cpu.getManufacturer() << ';'
@@ -333,7 +371,7 @@ bool MainWindow::saveFile(const QString &fileName)
                  << temp->cpu.getProc_speed() << ';'
                  << temp->cpu.getMem_type() << ';'
                  << temp->cpu.getMem_freq() << ';' << '\n';
-        temp = temp->next; //записываем адрес предыдущего элемента
+        temp = temp->next; //записываем адрес следующего элемента
     }
     isEdited = false;
     out_file.close();
@@ -366,8 +404,15 @@ void MainWindow::createTableItem(int i, bool new_item)
 {
     const int num_of_param = 8;
 
-    if(new_item)
-        ui->tableWidget->setRowCount(ui->tableWidget->rowCount()+1);
+
+    int pos;
+    if(new_item){
+        pos = ui->tableWidget->rowCount();
+        ui->tableWidget->setRowCount(ui->tableWidget->rowCount()+1);}
+    else{
+        pos = i;
+    }
+
 
     QTableWidgetItem *Item[num_of_param];
 
@@ -382,7 +427,7 @@ void MainWindow::createTableItem(int i, bool new_item)
 
     for (int j = 0; j < num_of_param; j++)
     {
-        ui->tableWidget->setItem(i, j, Item[j]);
+        ui->tableWidget->setItem(pos, j, Item[j]);
     }
 }
 
