@@ -11,15 +11,18 @@ CONFIG += c++11
 SOURCES += \
     cpu.cpp \
     customlist.cpp \
+    dialogwindow.cpp \
     main.cpp \
     mainwindow.cpp
 
 HEADERS += \
     cpu.hpp \
     customlist.hpp \
+    dialogwindow.hpp \
     mainwindow.hpp
 
 FORMS += \
+    dialogwindow.ui \
     mainwindow.ui
 
 TRANSLATIONS += \

@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "cpu.hpp"
+#include "dialogwindow.hpp"
 
 #include <string>
 #include <iostream>
@@ -127,6 +128,13 @@ bool MainWindow::action_save_triggered()
     }
 }
 
+void MainWindow::action_add_triggered()
+{
+    DialogWindow dlgwin;
+    dlgwin.exec();
+
+}
+
 //"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
 bool MainWindow::may_be_save()
 {
@@ -203,6 +211,7 @@ void MainWindow::openFile(const QString &fileName)
     isOpen = true; //файл считается открытым
 }
 
+//метод обрабатывающий файл при сохранении
 bool MainWindow::saveFile(const QString &fileName)
 {
     QFile file(fileName);

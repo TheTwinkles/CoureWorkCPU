@@ -22,13 +22,10 @@ private slots:
     void action_newFile_triggered();
     void action_open_triggered();
     bool action_save_triggered();
-    bool may_be_save();
+
+    void action_add_triggered();
 
     void item_edited(); //слот для проверки была ли отредактирована ячейка
-
-
-    void openFile(const QString& fileName);
-    bool saveFile(const QString& filename);
 
 private:
     Ui::MainWindow *ui;
@@ -40,6 +37,11 @@ private:
     bool lastItemCreated; //Из файла считана последняя ячейка
 
     customList list; //список для хранения данных
+
+    bool may_be_save();
+
+    void openFile(const QString& fileName);
+    bool saveFile(const QString& filename);
 
     void createTableHeader(); //создание заголовка таблицы
     void createTableItem(int i, bool new_item = true); //создание записи в таблице

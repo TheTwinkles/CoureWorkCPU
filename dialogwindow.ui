@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DialogWindow</class>
+ <widget class="QDialog" name="DialogWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>300</width>
+    <height>291</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="lab_manuf">
+     <property name="text">
+      <string>Производитель</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="edit_manuf"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="edit_model"/>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="lab_cost">
+     <property name="text">
+      <string>Цена</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QSpinBox" name="spin_cost"/>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="lab_socket">
+     <property name="text">
+      <string>Сокет</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="edit_socket"/>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="lab_numcor">
+     <property name="text">
+      <string>Количество ядер</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QSpinBox" name="spin_numcor"/>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="lab_prc_spd">
+     <property name="text">
+      <string>Тактовая частота</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="lab_mem_type">
+     <property name="text">
+      <string>Тип памяти</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="edit_mem_type"/>
+   </item>
+   <item row="5" column="1">
+    <widget class="QSpinBox" name="spin_prc_spd"/>
+   </item>
+   <item row="7" column="1">
+    <widget class="QSpinBox" name="spin_mem_freq"/>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="lab_mem_freq">
+     <property name="text">
+      <string>Частота памяти</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="button_ok">
+        <property name="text">
+         <string>OK</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="button_cancel">
+        <property name="text">
+         <string>Cancel</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="lab_model">
+     <property name="text">
+      <string>Модель</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>button_cancel</sender>
+   <signal>clicked()</signal>
+   <receiver>DialogWindow</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>241</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>149</x>
+     <y>145</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>button_ok</sender>
+   <signal>clicked()</signal>
+   <receiver>DialogWindow</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>155</x>
+     <y>262</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>149</x>
+     <y>145</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
