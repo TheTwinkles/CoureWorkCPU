@@ -13,6 +13,8 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QInputDialog>
+#include <QCloseEvent>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -57,6 +59,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     //связывание сигнала изменения ячейки в таблице и слота item_edited
     connect(ui->tableWidget, &QTableWidget::cellChanged, this, &MainWindow::item_edited);
+
+    loadSettings();
 
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 
@@ -381,6 +385,8 @@ bool MainWindow::may_be_save()
     return true;
 }
 
+
+
 //если ячейка в таблице была отредактирована - сработает этот метод
 void MainWindow::item_edited()
 {
@@ -389,6 +395,47 @@ void MainWindow::item_edited()
         isEdited = true;
     }
 }
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (may_be_save())
+    {
+        saveSettings("US_us", pos(), size());
+        //)()()()()!!!
+        event->accept();
+    }
+    else
+    {
+        saveSettings("US_us", pos(), size());
+        //)()()()()!!!
+        event->ignore();
+    }
+}
+
+void MainWindow::saveSettings(QString locale, QPoint pos, QSize dim)
+{
+    QSettings settings("settings.ini",QSettings::IniFormat);
+    settings.beginGroup("Settings");
+    settings.setValue("language", locale);
+    settings.endGroup();
+    settings.beginGroup("WindowGeometry");
+    settings.setValue("pos", pos);
+    settings.setValue("dim", dim);
+}
+
+void MainWindow::loadSettings()
+{
+    QSettings settings("settings.ini", QSettings::IniFormat);
+    settings.beginGroup("WindowGeometry");
+    resize(settings.value("dim", QSize(1000,1000)).toSize());
+    move(settings.value("pos", QPoint(200, 200)).toPoint());
+    settings.endGroup();
+    settings.beginGroup("Settings");
+//    active_lang = settings.value("language").toString();
+    settings.endGroup();
+}
+
+
 
 //метод обрабатывающий файл при открытии
 void MainWindow::openFile(const QString &fileName)

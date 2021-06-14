@@ -45,7 +45,7 @@
    </property>
    <widget class="QMenu" name="menu_File">
     <property name="title">
-     <string>Файл</string>
+     <string>File</string>
     </property>
     <addaction name="action_New"/>
     <addaction name="action_Open"/>
@@ -57,7 +57,7 @@
    </widget>
    <widget class="QMenu" name="menu_Edit">
     <property name="title">
-     <string>Редактировать</string>
+     <string>Edit</string>
     </property>
     <addaction name="action_Add"/>
     <addaction name="action_Edit"/>
@@ -65,13 +65,13 @@
    </widget>
    <widget class="QMenu" name="menu_Settings">
     <property name="title">
-     <string>Настройки</string>
+     <string>Settings</string>
     </property>
     <addaction name="action_Language"/>
    </widget>
    <widget class="QMenu" name="menu_About">
     <property name="title">
-     <string>Справка</string>
+     <string>About</string>
     </property>
     <addaction name="action_AboutProgram"/>
     <addaction name="action_AboutAuthor"/>
@@ -110,17 +110,17 @@
   </widget>
   <action name="action_Language">
    <property name="text">
-    <string>Язык</string>
+    <string>Language</string>
    </property>
   </action>
   <action name="action_AboutProgram">
    <property name="text">
-    <string> О программе</string>
+    <string>About program</string>
    </property>
   </action>
   <action name="action_AboutAuthor">
    <property name="text">
-    <string> Об авторе</string>
+    <string>About author</string>
    </property>
   </action>
   <action name="action_New">
@@ -129,7 +129,7 @@
      <normaloff>:/icons/img/new_file.png</normaloff>:/icons/img/new_file.png</iconset>
    </property>
    <property name="text">
-    <string>Новый</string>
+    <string>New</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+N</string>
@@ -141,7 +141,7 @@
      <normaloff>:/icons/img/open_file.png</normaloff>:/icons/img/open_file.png</iconset>
    </property>
    <property name="text">
-    <string>Открыть</string>
+    <string>Open</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -153,7 +153,7 @@
      <normaloff>:/icons/img/save_file.png</normaloff>:/icons/img/save_file.png</iconset>
    </property>
    <property name="text">
-    <string>Сохранить</string>
+    <string>Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -161,7 +161,7 @@
   </action>
   <action name="action_Exit_All">
    <property name="text">
-    <string>Закрыть все окна</string>
+    <string>Close all</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+Q</string>
@@ -173,7 +173,7 @@
      <normaloff>:/icons/img/add_property.png</normaloff>:/icons/img/add_property.png</iconset>
    </property>
    <property name="text">
-    <string>Добавить запись</string>
+    <string>Add record</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
@@ -188,7 +188,7 @@
      <normaloff>:/icons/img/edit_property.png</normaloff>:/icons/img/edit_property.png</iconset>
    </property>
    <property name="text">
-    <string>Изменить запись</string>
+    <string>Edit record</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+E</string>
@@ -203,7 +203,7 @@
      <normaloff>:/icons/img/delete_property.png</normaloff>:/icons/img/delete_property.png</iconset>
    </property>
    <property name="text">
-    <string>Удалить запись</string>
+    <string>Delete record</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+D</string>
@@ -215,7 +215,7 @@
      <normaloff>:/icons/img/close_file.png</normaloff>:/icons/img/close_file.png</iconset>
    </property>
    <property name="text">
-    <string>Закрыть окно</string>
+    <string>Close</string>
    </property>
   </action>
  </widget>

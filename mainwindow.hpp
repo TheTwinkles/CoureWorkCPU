@@ -35,6 +35,9 @@ private slots:
 
     void item_edited(); //слот для проверки была ли отредактирована ячейка
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private:
     Ui::MainWindow *ui;
 
@@ -48,6 +51,9 @@ private:
     bool lastItemCreated; //Из файла считана последняя ячейка
 
     customList list; //список для хранения данных
+
+    void saveSettings(QString locale, QPoint pos,QSize dim);
+    void loadSettings();
 
     bool may_be_save();
 
