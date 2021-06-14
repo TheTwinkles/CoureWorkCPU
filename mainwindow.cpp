@@ -48,10 +48,18 @@ MainWindow::MainWindow(QWidget *parent)
             this, &MainWindow::action_delete_triggered); //связывание действия удаления данных и вызов метода delete
 
     connect(ui->lineEdit, SIGNAL(editingFinished()),
-            this, SLOT(lineEditSearch_editingFinished()));
+            this, SLOT(lineEditSearch_editingFinished())); //связывание действия завершения редактирования строки lineEdit
+                                                           //и вызова метода для поиска
+
+    ui->tableWidget->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->tableWidget, SIGNAL(customContextMenuRequested(QPoint)),
+            this, SLOT(CustomMenuRequested(QPoint))); //связывание вызова контекстного меню
 
     //связывание сигнала изменения ячейки в таблице и слота item_edited
     connect(ui->tableWidget, &QTableWidget::cellChanged, this, &MainWindow::item_edited);
+
+    ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+
     int static filenum = 0; //номер untitled файла
 
     currentFileName = QString("untitled%1.txt").arg(filenum++); //название файла при создании окна по умолчанию
@@ -177,7 +185,7 @@ void MainWindow::action_edit_triggered()
 {
     isEdited = true;
     bool ok; //переменная в которую QInputDialog запишет нажатие на кнопку отмены или подтверждения
-    int element_pos = QInputDialog::getInt(this, QString::fromUtf8("Input"),
+    int row = QInputDialog::getInt(this, QString::fromUtf8("Input"),
                                            QString::fromUtf8("Enter the line number in the table:"),
                                            1, 1, str_count, 1, &ok) - 1;
     //в element_pos записывается вводимый пользователем номер строки (-1 т.к. в списке счет идет от 0)
@@ -188,29 +196,32 @@ void MainWindow::action_edit_triggered()
     dlgwin.setWindowTitle(tr("Edit"));
 
     //заполняем поля диалогового окна данными выбраной строки в таблице
-    dlgwin.setManufacturer(list[element_pos]->cpu.getManufacturer());
-    dlgwin.setModel(list[element_pos]->cpu.getModel());
-    dlgwin.setCost(list[element_pos]->cpu.getCost());
-    dlgwin.setSocket(list[element_pos]->cpu.getSocket());
-    dlgwin.setCore_num(list[element_pos]->cpu.getCore_num());
-    dlgwin.setProc_speed(list[element_pos]->cpu.getProc_speed());
-    dlgwin.setMem_type(list[element_pos]->cpu.getMem_type());
-    dlgwin.setMem_freq(list[element_pos]->cpu.getMem_freq());
+    dlgwin.setManufacturer(list[row]->cpu.getManufacturer());
+    dlgwin.setModel(list[row]->cpu.getModel());
+    dlgwin.setCost(list[row]->cpu.getCost());
+    dlgwin.setSocket(list[row]->cpu.getSocket());
+    dlgwin.setCore_num(list[row]->cpu.getCore_num());
+    dlgwin.setProc_speed(list[row]->cpu.getProc_speed());
+    dlgwin.setMem_type(list[row]->cpu.getMem_type());
+    dlgwin.setMem_freq(list[row]->cpu.getMem_freq());
 
     dlgwin.exec(); //запускаем диалоговое окно
-    if(dlgwin.result() == DialogWindow::Rejected) return; //если пользователь нажал отмена, то отменяем изменение
-
+    if(dlgwin.result() == DialogWindow::Rejected)
+    {
+        isEdited = false;
+        return; //если пользователь нажал отмена, то отменяем изменение
+    }
     //устанавливаем новые значения
-    list[element_pos]->cpu.setManufacturer(dlgwin.getManufacturer());
-    list[element_pos]->cpu.setModel(dlgwin.getModel());
-    list[element_pos]->cpu.setCost(dlgwin.getCost());
-    list[element_pos]->cpu.setSocket(dlgwin.getSocket());
-    list[element_pos]->cpu.setCore_num(dlgwin.getCore_num());
-    list[element_pos]->cpu.setProc_speed(dlgwin.getProc_speed());
-    list[element_pos]->cpu.setMem_type(dlgwin.getMem_type());
-    list[element_pos]->cpu.setMem_freq(dlgwin.getMem_freq());
+    list[row]->cpu.setManufacturer(dlgwin.getManufacturer());
+    list[row]->cpu.setModel(dlgwin.getModel());
+    list[row]->cpu.setCost(dlgwin.getCost());
+    list[row]->cpu.setSocket(dlgwin.getSocket());
+    list[row]->cpu.setCore_num(dlgwin.getCore_num());
+    list[row]->cpu.setProc_speed(dlgwin.getProc_speed());
+    list[row]->cpu.setMem_type(dlgwin.getMem_type());
+    list[row]->cpu.setMem_freq(dlgwin.getMem_freq());
 
-    createTableItem(element_pos, false); //обновляем строку в таблице
+    createTableItem(row, false); //обновляем строку в таблице
 }
 
 //отработка триггера действия удаления данных
@@ -218,52 +229,135 @@ void MainWindow::action_delete_triggered()
 {
     isEdited = true;
     bool ok; //переменная в которую QInputDialog запишет нажатие на кнопку отмены или подтверждения
-    int element_pos = QInputDialog::getInt(this, QString::fromUtf8("Input"),
+    int row = QInputDialog::getInt(this, QString::fromUtf8("Input"),
                                            QString::fromUtf8("Enter the line number in the table:"),
                                            1, 1, str_count, 1, &ok) - 1;
     //в element_pos записывается вводимый пользователем номер строки (-1 т.к. в списке счет идет от 0)
 
     if(!ok) return; //если не было подтверждения в QInputDialog, то отменяем изменение
 
-    list.deleteFromList(element_pos);
+    list.deleteFromList(row); //удаляем запись из списка
 
-    str_count -= 1;
+    str_count -= 1; //уменьшаем счетчик количества записей в файле
 
-    ui->tableWidget->removeRow(element_pos);
+    ui->tableWidget->removeRow(row); //удаляем строку из таблицы
+
+    if (ui->tableWidget->rowCount() == 0) //если запись была последней в таблице, то убираем горизонтальный заголовок
+        ui->tableWidget->horizontalHeader()->hide();
 }
 
+//отработка введения поискового запроса в lineEdit
 void MainWindow::lineEditSearch_editingFinished()
 {
-    for(int i=ui->tableWidget->rowCount();i>=0;i--)
+    for(int i=ui->tableWidget->rowCount();i>=0;i--) //очищаем таблицу
     {
         ui->tableWidget->removeRow(i);
     }
-    QString trg = ui->lineEdit->text();
-    bool is_int;
-    int val = trg.toInt(&is_int);
-    for (int i = 0; i < str_count; i++)
+    QString trg = ui->lineEdit->text(); //получаем поисковый запрос из lineEdit
+    bool is_int; //введенный запрос int?
+    int val = trg.toInt(&is_int); //записываем в отдельную переменную запрос преобразованный в int
+    for (int i = 0; i < str_count; i++) //проходимся по всем значениям в списке данных
     {
-        if ((!is_int&&QString::fromStdString(list[i]->cpu.getManufacturer()).contains(trg))
-                || (!is_int&&QString::fromStdString(list[i]->cpu.getModel()).contains(trg))
-                || (is_int&&(list[i]->cpu.getCost()==val))
-                || (!is_int&&QString::fromStdString(list[i]->cpu.getSocket()).contains(trg))
-                || (is_int&&(list[i]->cpu.getCore_num()==val))
-                || (is_int&&(list[i]->cpu.getProc_speed()==val))
-                || (!is_int&&QString::fromStdString(list[i]->cpu.getMem_type()).contains(trg))
-                || (is_int&&(list[i]->cpu.getMem_freq()==val)))
+        if ((!is_int && QString::fromStdString(list[i]->cpu.getManufacturer()).contains(trg)) //если запрос не число и запрос совпадает
+                                                                                              //с полем хранимого в списке элемента, то отрисовываем элемент
+                                                                                              //списка в таблице
+                || (!is_int && QString::fromStdString(list[i]->cpu.getModel()).contains(trg))
+                || (is_int && (list[i]->cpu.getCost() == val)) //если запрос число и запрос совпадает
+                                                               //с полем хранимого элемента в списке элемента,
+                                                               //то отрисовываем элемент списка в таблице
+                || (!is_int && QString::fromStdString(list[i]->cpu.getSocket()).contains(trg))
+                || (is_int && (list[i]->cpu.getCore_num() == val))
+                || (is_int && (list[i]->cpu.getProc_speed() == val))
+                || (!is_int && QString::fromStdString(list[i]->cpu.getMem_type()).contains(trg))
+                || (is_int && (list[i]->cpu.getMem_freq() == val)))
                     createTableItem(i);
     }
+}
 
+//создание кастомного контекстного меню
+void MainWindow::CustomMenuRequested(QPoint pos)
+{
+    QMenu *menu = new QMenu(this); //создаем объект контекстного меню
 
-    /* if (QString::fromStdString(list[i]->cpu.getManufacturer()).contains(trg)
-                || QString::fromStdString(list[i]->cpu.getModel()).contains(ui->lineEdit->text())
-                || is_int?(list[i]->cpu.getCost()==val):( QString::number(list[i]->cpu.getCost()).contains(ui->lineEdit->text()))
-                || QString::fromStdString(list[i]->cpu.getSocket()).contains(ui->lineEdit->text())
-                || is_int?(list[i]->cpu.getCore_num()==val):(QString::number(list[i]->cpu.getCore_num()).contains(ui->lineEdit->text()))
-                || is_int?(list[i]->cpu.getProc_speed()==val):(QString::number(list[i]->cpu.getProc_speed()).contains(ui->lineEdit->text()))
-                || QString::fromStdString(list[i]->cpu.getMem_type()).contains(ui->lineEdit->text())
-                || is_int?(list[i]->cpu.getMem_freq()==val):(QString::number(list[i]->cpu.getMem_freq()).contains(ui->lineEdit->text())))
-                    createTableItem(i);*/
+    QAction *editRow = new QAction(tr("Edit"), this); //создание действия редактировать
+    QAction *deleteRow = new QAction(tr("Delete"), this); //создание действия удалить
+
+    connect(editRow, SIGNAL(triggered()), this, SLOT(cont_editRow()));     //обработчик вызова диалога редактирования
+    connect(deleteRow, SIGNAL(triggered()), this, SLOT(cont_deleteRow())); //обработчик удаления записи
+
+    menu->addAction(editRow); //добавляем действия в меню
+    menu->addAction(deleteRow);
+
+    menu->popup(ui->tableWidget->viewport()->mapToGlobal(pos)); //вызов контекстного меню
+}
+
+//действие редактирования вызываемое из контекстного меню
+void MainWindow::cont_editRow()
+{
+    isEdited = true;
+    int row = ui->tableWidget->selectionModel()->currentIndex().row(); //получаем номер выбранной строки в таблице
+
+    DialogWindow dlgwin; //создаем объект диалогового окна
+    dlgwin.setWindowTitle(tr("Edit"));
+
+    //заполняем поля диалогового окна данными выбраной строки в таблице
+    dlgwin.setManufacturer(list[row]->cpu.getManufacturer());
+    dlgwin.setModel(list[row]->cpu.getModel());
+    dlgwin.setCost(list[row]->cpu.getCost());
+    dlgwin.setSocket(list[row]->cpu.getSocket());
+    dlgwin.setCore_num(list[row]->cpu.getCore_num());
+    dlgwin.setProc_speed(list[row]->cpu.getProc_speed());
+    dlgwin.setMem_type(list[row]->cpu.getMem_type());
+    dlgwin.setMem_freq(list[row]->cpu.getMem_freq());
+
+    dlgwin.exec(); //запускаем диалоговое окно
+    if(dlgwin.result() == DialogWindow::Rejected)
+    {
+        isEdited = false;
+        return; //если пользователь нажал отмена, то отменяем изменение
+    }
+
+    //устанавливаем новые значения
+    list[row]->cpu.setManufacturer(dlgwin.getManufacturer());
+    list[row]->cpu.setModel(dlgwin.getModel());
+    list[row]->cpu.setCost(dlgwin.getCost());
+    list[row]->cpu.setSocket(dlgwin.getSocket());
+    list[row]->cpu.setCore_num(dlgwin.getCore_num());
+    list[row]->cpu.setProc_speed(dlgwin.getProc_speed());
+    list[row]->cpu.setMem_type(dlgwin.getMem_type());
+    list[row]->cpu.setMem_freq(dlgwin.getMem_freq());
+
+    createTableItem(row, false); //обновляем строку в таблице
+}
+
+//действие удаления вызываемое из контекстного меню
+void MainWindow::cont_deleteRow()
+{
+    int row = ui->tableWidget->selectionModel()->currentIndex().row(); //получаем номер выбранной строки в таблице
+
+    if(row >= 0) // проверка на выбор строки
+    {
+        if (QMessageBox::warning(this, //если пользователь подтверждает удаление, то удаляем, если нет, то отменяем изменения
+                                 tr("Confirmation"),
+                                 tr("Are you sure you want to delete this entry?"),
+                                 QMessageBox::Yes | QMessageBox::No) == QMessageBox::No)
+        {
+            return;
+        }
+        else
+        {
+            list.deleteFromList(row);
+
+            str_count -= 1;
+
+            ui->tableWidget->removeRow(row);
+
+            isEdited = true; //документ считаеся отредактированым
+
+            if (ui->tableWidget->rowCount() == 0) //если запись была последней в таблице, то убираем горизонтальный заголовок
+                ui->tableWidget->horizontalHeader()->hide();
+        }
+    }
 }
 
 //"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"

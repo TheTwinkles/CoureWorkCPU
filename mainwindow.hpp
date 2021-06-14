@@ -29,6 +29,10 @@ private slots:
 
     void lineEditSearch_editingFinished();
 
+    void CustomMenuRequested(QPoint pos);
+    void cont_editRow();
+    void cont_deleteRow();
+
     void item_edited(); //слот для проверки была ли отредактирована ячейка
 
 private:
