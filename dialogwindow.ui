@@ -17,7 +17,7 @@
    <item row="0" column="0">
     <widget class="QLabel" name="lab_manuf">
      <property name="text">
-      <string>Производитель</string>
+      <string>Manufacturer</string>
      </property>
     </widget>
    </item>
@@ -30,7 +30,7 @@
    <item row="2" column="0">
     <widget class="QLabel" name="lab_cost">
      <property name="text">
-      <string>Цена</string>
+      <string>Cost</string>
      </property>
     </widget>
    </item>
@@ -47,7 +47,7 @@
    <item row="3" column="0">
     <widget class="QLabel" name="lab_socket">
      <property name="text">
-      <string>Сокет</string>
+      <string>Socket</string>
      </property>
     </widget>
    </item>
@@ -57,7 +57,7 @@
    <item row="4" column="0">
     <widget class="QLabel" name="lab_numcor">
      <property name="text">
-      <string>Количество ядер</string>
+      <string>Number of cores</string>
      </property>
     </widget>
    </item>
@@ -74,14 +74,14 @@
    <item row="5" column="0">
     <widget class="QLabel" name="lab_prc_spd">
      <property name="text">
-      <string>Тактовая частота</string>
+      <string>Clock frequency</string>
      </property>
     </widget>
    </item>
    <item row="6" column="0">
     <widget class="QLabel" name="lab_mem_type">
      <property name="text">
-      <string>Тип памяти</string>
+      <string>Memory type</string>
      </property>
     </widget>
    </item>
@@ -111,7 +111,7 @@
    <item row="7" column="0">
     <widget class="QLabel" name="lab_mem_freq">
      <property name="text">
-      <string>Частота памяти</string>
+      <string>Memory frequency</string>
      </property>
     </widget>
    </item>
@@ -121,14 +121,14 @@
       <item>
        <widget class="QPushButton" name="button_ok">
         <property name="text">
-         <string>OK</string>
+         <string>Ok</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="button_cancel">
         <property name="text">
-         <string>Отмена</string>
+         <string>Cancel</string>
         </property>
        </widget>
       </item>
@@ -138,7 +138,7 @@
    <item row="1" column="0">
     <widget class="QLabel" name="lab_model">
      <property name="text">
-      <string>Модель</string>
+      <string>Model</string>
      </property>
     </widget>
    </item>

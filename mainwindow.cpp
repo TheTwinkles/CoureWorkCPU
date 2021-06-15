@@ -16,6 +16,7 @@
 #include <QCloseEvent>
 #include <QSettings>
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -49,6 +50,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_Delete, &QAction::triggered,
             this, &MainWindow::action_delete_triggered); //связывание действия удаления данных и вызов метода delete
 
+    connect(ui->action_AboutProgram, &QAction::triggered,
+            this, &MainWindow::action_aboutProgram_triggered);
+    connect(ui->action_AboutAuthor, &QAction::triggered,
+            this, &MainWindow::action_aboutAuthor_triggered);
+
     connect(ui->lineEdit, SIGNAL(editingFinished()),
             this, SLOT(lineEditSearch_editingFinished())); //связывание действия завершения редактирования строки lineEdit
                                                            //и вызова метода для поиска
@@ -61,6 +67,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->tableWidget, &QTableWidget::cellChanged, this, &MainWindow::item_edited);
 
     loadSettings();
+
+    qmPath = qmPath = qApp->applicationDirPath() + "/translations";
+    createLanguageMenu();
 
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 
@@ -75,6 +84,8 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+/*Блок действий меню File-----------------------------------------------------*/
 
 //отработка триггера действия создания нового файла
 void MainWindow::action_newFile_triggered()
@@ -94,15 +105,8 @@ void MainWindow::action_open_triggered()
         {
             openFile(str); //считываем данные из файла
         }
-        else //иначе выводим предупреждение
+        else
         {
-            QMessageBox::StandardButton ret;
-            ret = QMessageBox::warning(this,
-                                       tr("Warning"),
-                                       tr("You have not selected a file"),
-                                       QMessageBox::StandardButton::Ok);
-            if (ret == QMessageBox::StandardButton::Ok) //если пользователь нажал сохранить вызываем триггер save
-                return;
             return;
         }
         setCurrentFile(str); //устанавливаем в названии имя открытого файла
@@ -151,17 +155,23 @@ bool MainWindow::action_save_triggered()
     }
 }
 
+/*Блок действий меню Edit-----------------------------------------------------*/
+
 //отработка триггера действия добавления данных
 void MainWindow::action_add_triggered()
 {
     isEdited = true;
     if(!lastItemCreated) createTableHeader();
     DialogWindow dlgwin; //создание объекта диалоговога окна
-    dlgwin.exec(); //запускаем диалоговое окно
     dlgwin.setWindowTitle(tr("Add"));
+    dlgwin.exec(); //запускаем диалоговое окно
 
-    if(dlgwin.result() == DialogWindow::Rejected) return; //если пользователь нажимает cancel
-
+    if(dlgwin.result() == DialogWindow::Rejected)
+    {
+        ui->tableWidget->horizontalHeader()->hide();
+        isEdited = false;
+        return; //если пользователь нажимает cancel
+    }
     CPU new_cpu; //создаем объект добавляемого процессора
 
     //заполняем поля объекта данными из диалогового окна
@@ -189,13 +199,16 @@ void MainWindow::action_edit_triggered()
 {
     isEdited = true;
     bool ok; //переменная в которую QInputDialog запишет нажатие на кнопку отмены или подтверждения
-    int row = QInputDialog::getInt(this, QString::fromUtf8("Input"),
-                                           QString::fromUtf8("Enter the line number in the table:"),
+    int row = QInputDialog::getInt(this, QString (tr("Input")),
+                                           QString (tr("Enter the line number in the table:")),
                                            1, 1, str_count, 1, &ok) - 1;
-    //в element_pos записывается вводимый пользователем номер строки (-1 т.к. в списке счет идет от 0)
+    //в row записывается вводимый пользователем номер строки (-1 т.к. в списке счет идет от 0)
 
-    if(!ok) return; //если не было подтверждения в QInputDialog, то отменяем изменение
-
+    if(!ok)
+    {
+        isEdited = false;
+        return; //если не было подтверждения в QInputDialog, то отменяем изменение
+    }
     DialogWindow dlgwin; //создаем объект диалогового окна
     dlgwin.setWindowTitle(tr("Edit"));
 
@@ -233,13 +246,16 @@ void MainWindow::action_delete_triggered()
 {
     isEdited = true;
     bool ok; //переменная в которую QInputDialog запишет нажатие на кнопку отмены или подтверждения
-    int row = QInputDialog::getInt(this, QString::fromUtf8("Input"),
-                                           QString::fromUtf8("Enter the line number in the table:"),
+    int row = QInputDialog::getInt(this, QString (tr("Input")),
+                                           QString (tr("Enter the line number in the table:")),
                                            1, 1, str_count, 1, &ok) - 1;
-    //в element_pos записывается вводимый пользователем номер строки (-1 т.к. в списке счет идет от 0)
+    //в row записывается вводимый пользователем номер строки (-1 т.к. в списке счет идет от 0)
 
-    if(!ok) return; //если не было подтверждения в QInputDialog, то отменяем изменение
-
+    if(!ok)
+    {
+        isEdited = false;
+        return; //если не было подтверждения в QInputDialog, то отменяем изменение
+    }
     list.deleteFromList(row); //удаляем запись из списка
 
     str_count -= 1; //уменьшаем счетчик количества записей в файле
@@ -249,6 +265,22 @@ void MainWindow::action_delete_triggered()
     if (ui->tableWidget->rowCount() == 0) //если запись была последней в таблице, то убираем горизонтальный заголовок
         ui->tableWidget->horizontalHeader()->hide();
 }
+
+/*Блок действий меню About----------------------------------------------------*/
+
+//отработка триггера действия выведения данных о программе
+void MainWindow::action_aboutProgram_triggered()
+{
+    QMessageBox::about(this, tr("About program"), tr("Processor accounting program"));
+}
+
+//отработка триггера действия выведения данных об авторе программы
+void MainWindow::action_aboutAuthor_triggered()
+{
+    QMessageBox::about(this, tr("About author"), tr("This program was developed by IEUIS-2-6 student Zabolotnov Nikolay Vladimirovich"));
+}
+
+//------------------------------------------------------------------------------
 
 //отработка введения поискового запроса в lineEdit
 void MainWindow::lineEditSearch_editingFinished()
@@ -277,6 +309,8 @@ void MainWindow::lineEditSearch_editingFinished()
                     createTableItem(i);
     }
 }
+
+/*Блок контекстного меню и его действий---------------------------------------*/
 
 //создание кастомного контекстного меню
 void MainWindow::CustomMenuRequested(QPoint pos)
@@ -359,33 +393,15 @@ void MainWindow::cont_deleteRow()
             isEdited = true; //документ считаеся отредактированым
 
             if (ui->tableWidget->rowCount() == 0) //если запись была последней в таблице, то убираем горизонтальный заголовок
+            {
+                isEdited = false;
                 ui->tableWidget->horizontalHeader()->hide();
+            }
         }
     }
 }
 
-//"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
-bool MainWindow::may_be_save()
-{
-    if (isEdited) //если какая-либо ячейка таблицы отредактирована
-    {
-        QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(this,
-                                   tr("File changed"),
-                                   tr("The file has been edited\n"
-                                      "Do you want to commit your changes?"),
-                                   QMessageBox::Save |
-                                   QMessageBox::Discard |
-                                   QMessageBox::Cancel);
-        if (ret == QMessageBox::Save) //если пользователь нажал сохранить вызываем триггер save
-            return action_save_triggered();
-        else if (ret == QMessageBox::Cancel) //если пользователь нажал отмена - отменяем открытие нового файла
-            return false;
-    }
-    return true;
-}
-
-
+//------------------------------------------------------------------------------
 
 //если ячейка в таблице была отредактирована - сработает этот метод
 void MainWindow::item_edited()
@@ -396,22 +412,24 @@ void MainWindow::item_edited()
     }
 }
 
+//перехвает closeEvent`a для того чтобы сделать доп. действия по закрытию программы
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (may_be_save())
     {
-        saveSettings("US_us", pos(), size());
-        //)()()()()!!!
+        saveSettings("us_US", pos(), size());
         event->accept();
     }
     else
     {
-        saveSettings("US_us", pos(), size());
-        //)()()()()!!!
+        saveSettings("us_US", pos(), size());
         event->ignore();
     }
 }
 
+//------------------------------------------------------------------------------
+
+//метод сохранение настроек программы
 void MainWindow::saveSettings(QString locale, QPoint pos, QSize dim)
 {
     QSettings settings("settings.ini",QSettings::IniFormat);
@@ -431,7 +449,7 @@ void MainWindow::loadSettings()
     move(settings.value("pos", QPoint(200, 200)).toPoint());
     settings.endGroup();
     settings.beginGroup("Settings");
-//    active_lang = settings.value("language").toString();
+    active_lang = settings.value("language").toString();
     settings.endGroup();
 }
 
@@ -516,6 +534,27 @@ bool MainWindow::saveFile(const QString &fileName)
     }
     isEdited = false;
     out_file.close();
+    return true;
+}
+
+//"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
+bool MainWindow::may_be_save()
+{
+    if (isEdited) //если какая-либо ячейка таблицы отредактирована
+    {
+        QMessageBox::StandardButton ret;
+        ret = QMessageBox::warning(this,
+                                   tr("File changed"),
+                                   tr("The file has been edited\n"
+                                      "Do you want to commit your changes?"),
+                                   QMessageBox::Save |
+                                   QMessageBox::Discard |
+                                   QMessageBox::Cancel);
+        if (ret == QMessageBox::Save) //если пользователь нажал сохранить вызываем триггер save
+            return action_save_triggered();
+        else if (ret == QMessageBox::Cancel) //если пользователь нажал отмена - отменяем открытие нового файла
+            return false;
+    }
     return true;
 }
 
@@ -614,4 +653,93 @@ int MainWindow::number_of_datastrings(const QString& filename)
             ++ctn; //если строка непустая, то количество строк в файле увеличивается
     }
     return ctn; //возвращаем кол-во строк в файле
+}
+
+
+void MainWindow::set_language(QString locale)
+{
+    if (locale.isEmpty()) return;
+        if (!qtLngTranslator.load("coursework_" + locale, qmPath))
+        {
+            return;
+        }
+        active_lang = locale;
+        qApp->installTranslator(&qtLngTranslator);
+        ui->retranslateUi(this);
+}
+
+void MainWindow::switchLanguage()
+{
+    set_language(languageActionGroup->checkedAction()->data().toString());
+}
+
+void MainWindow::createLanguageMenu()
+{
+//    languageActionGroup = new QActionGroup(this);
+
+//    connect(languageActionGroup, &QActionGroup::triggered, this, &MainWindow::switchLanguage);
+
+//    QDir dir(qmPath);
+
+//        QStringList fileNames = dir.entryList(QStringList("*.qm"));
+
+//        for(int i = 0; i < fileNames.size(); ++i)
+//        {
+//                QString locale = fileNames[i];
+//                locale.remove(0,locale.indexOf('.') - 5); //ищем символ "_", удаляем начало
+//                locale.truncate(locale.lastIndexOf(('.')));
+
+//                if (qtLngTranslator.load(fileNames[i], qmPath))
+//                {
+//                    QString language = qtLngTranslator.tr("lng");
+
+//                    QAction *action = new QAction(tr("%1").arg(language), this); //tr - метод переводчик разыскивает
+//                    //- нажимаемая кнопка.
+//                    action->setCheckable(true);
+//                    action->setData(locale);
+//                    ui->menu_Settings->addAction(action);
+//                    languageActionGroup->addAction(action);
+
+//                    if (locale == active_lang)
+//                    {
+//                        action->setChecked(true);
+//                    }
+//                }
+//        }
+    languageActionGroup = new QActionGroup(this);
+        connect(languageActionGroup, &QActionGroup::triggered,
+                this, &MainWindow::switchLanguage);
+
+        QDir dir(qmPath);
+
+        QStringList fileNames =
+                dir.entryList(QStringList("coursework_*.qm"));
+
+        for (int i = 0; i < fileNames.size(); i++)
+        {
+            QString locale = fileNames[i];
+            locale.remove(0, locale.indexOf('_') + 1);
+            locale.truncate(locale.lastIndexOf('.'));
+
+            QTranslator translator;
+            translator.load(fileNames[i], qmPath);
+
+            QString language = translator.translate("MainWindow",
+                                                    "English");
+
+            QAction *action = new QAction(tr("%1")
+                                          .arg(language),
+                                          this);
+
+            action->setCheckable(true);
+            action->setData(locale);
+
+            ui->menu_Settings->addAction(action);
+
+            languageActionGroup->addAction(action);
+
+            if (language == "English")
+                action->setChecked(true);
+        }
+
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="ru_RU">
+<TS version="2.1" language="en_US">
 <context>
     <name>DialogWindow</name>
     <message>
@@ -11,52 +11,52 @@
     <message>
         <location filename="dialogwindow.ui" line="20"/>
         <source>Manufacturer</source>
-        <translation>Производитель</translation>
+        <translation>Manufacturer</translation>
     </message>
     <message>
         <location filename="dialogwindow.ui" line="33"/>
         <source>Cost</source>
-        <translation>Цена</translation>
+        <translation>Cost</translation>
     </message>
     <message>
         <location filename="dialogwindow.ui" line="50"/>
         <source>Socket</source>
-        <translation>Сокет</translation>
+        <translation>Socket</translation>
     </message>
     <message>
         <location filename="dialogwindow.ui" line="60"/>
         <source>Number of cores</source>
-        <translation>Количество ядер</translation>
+        <translation>Number of cores</translation>
     </message>
     <message>
         <location filename="dialogwindow.ui" line="77"/>
         <source>Clock frequency</source>
-        <translation>Тактовая частота</translation>
+        <translation>Clock frequency</translation>
     </message>
     <message>
         <location filename="dialogwindow.ui" line="84"/>
         <source>Memory type</source>
-        <translation>Тип памяти</translation>
+        <translation>Memory type</translation>
     </message>
     <message>
         <location filename="dialogwindow.ui" line="114"/>
         <source>Memory frequency</source>
-        <translation>Частота памяти</translation>
+        <translation>Memory frequency</translation>
     </message>
     <message>
         <location filename="dialogwindow.ui" line="124"/>
         <source>Ok</source>
-        <translation>Ок</translation>
+        <translation>Ok</translation>
     </message>
     <message>
         <location filename="dialogwindow.ui" line="131"/>
         <source>Cancel</source>
-        <translation>Отмена</translation>
+        <translation>Cancel</translation>
     </message>
     <message>
         <location filename="dialogwindow.ui" line="141"/>
         <source>Model</source>
-        <translation>Модель</translation>
+        <translation>Model</translation>
     </message>
 </context>
 <context>
@@ -64,12 +64,12 @@
     <message>
         <location filename="mainwindow.ui" line="23"/>
         <source>Search</source>
-        <translation>Поиск</translation>
+        <translation>Search</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="48"/>
         <source>File</source>
-        <translation>Файл</translation>
+        <translation>File</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="60"/>
@@ -77,129 +77,129 @@
         <location filename="mainwindow.cpp" line="320"/>
         <location filename="mainwindow.cpp" line="339"/>
         <source>Edit</source>
-        <translation>Редактировать</translation>
+        <translation>Edit</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="68"/>
         <source>Settings</source>
-        <translation>Настройки</translation>
+        <translation>Settings</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="73"/>
         <source>About</source>
-        <translation>Сведения</translation>
+        <translation>About</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="89"/>
         <source>toolBar</source>
-        <translation></translation>
+        <translation>toolBar</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="112"/>
         <source>Language</source>
-        <translation>Язык</translation>
+        <translation>Language</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="117"/>
         <location filename="mainwindow.cpp" line="274"/>
         <source>About program</source>
-        <translation>О программе</translation>
+        <translation>About program</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="122"/>
         <location filename="mainwindow.cpp" line="280"/>
         <source>About author</source>
-        <translation>Об авторе</translation>
+        <translation>About author</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="131"/>
         <source>New</source>
-        <translation>Новый файл</translation>
+        <translation>New</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="134"/>
         <source>Ctrl+N</source>
-        <translation></translation>
+        <translation>Ctrl+N</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="143"/>
         <source>Open</source>
-        <translation>Открыть</translation>
+        <translation>Open</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="146"/>
         <source>Ctrl+O</source>
-        <translation></translation>
+        <translation>Ctrl+O</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="155"/>
         <source>Save</source>
-        <translation>Сохранить</translation>
+        <translation>Save</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="158"/>
         <source>Ctrl+S</source>
-        <translation></translation>
+        <translation>Ctrl+S</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="163"/>
         <source>Close all</source>
-        <translation>Закрыть все</translation>
+        <translation>Close all</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="166"/>
         <source>Ctrl+Shift+Q</source>
-        <translation></translation>
+        <translation>Ctrl+Shift+Q</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="175"/>
         <source>Add record</source>
-        <translation>Добавить запись</translation>
+        <translation>Add record</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="178"/>
         <source>Ctrl+R</source>
-        <translation></translation>
+        <translation>Ctrl+R</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="190"/>
         <source>Edit record</source>
-        <translation>Редактировать запись</translation>
+        <translation>Edit record</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="193"/>
         <source>Ctrl+E</source>
-        <translation></translation>
+        <translation>Ctrl+E</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="205"/>
         <source>Delete record</source>
-        <translation>Удалить запись</translation>
+        <translation>Delete record</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="208"/>
         <source>Ctrl+D</source>
-        <translation></translation>
+        <translation>Ctrl+D</translation>
     </message>
     <message>
         <location filename="mainwindow.ui" line="217"/>
         <source>Close</source>
-        <translation>Закрыть</translation>
+        <translation>Close</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="143"/>
         <source>Warning</source>
-        <translation>Предупреждение</translation>
+        <translation>Warning</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="144"/>
         <source>You have not selected a file</source>
-        <translation>Вы не выбрали файл</translation>
+        <translation>You have not selected a file</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="137"/>
         <source>Save as</source>
-        <translation>Сохранить как</translation>
+        <translation>Save as</translation>
     </message>
     <message>
         <source>untitled%1.txt</source>
@@ -208,127 +208,128 @@
     <message>
         <location filename="mainwindow.cpp" line="166"/>
         <source>Add</source>
-        <translation>Добавить запись</translation>
+        <translation>Add</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="202"/>
         <location filename="mainwindow.cpp" line="249"/>
         <source>Input</source>
-        <translation>Ввод</translation>
+        <translation>Input</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="203"/>
         <location filename="mainwindow.cpp" line="250"/>
         <source>Enter the line number in the table:</source>
-        <translation>Введите номер строки:</translation>
+        <translation>Enter the line number in the table:</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="274"/>
         <source>Processor accounting program</source>
-        <translation>Программа учета процессоров</translation>
+        <translation>Processor accounting program</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="280"/>
         <source>This program was developed by IEUIS-2-6 student Zabolotnov Nikolay Vladimirovich</source>
-        <translation>Эта программа была разработана студентом группы ИЭУИС-2-6 Заболотновым Николаем Владимировичем</translation>
+        <translation>This program was developed by IEUIS-2-6 student Zabolotnov Nikolay Vladimirovich</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="321"/>
         <source>Delete</source>
-        <translation>Удалить</translation>
+        <translation>Delete</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="379"/>
         <source>Confirmation</source>
-        <translation>Подтверждение</translation>
+        <translation>Confirmation</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="380"/>
         <source>Are you sure you want to delete this entry?</source>
-        <translation>Вы точно хотите удалить эту запись?</translation>
+        <translation>Are you sure you want to delete this entry?</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="466"/>
         <source>Read error</source>
-        <translation>Ошибка чтения</translation>
+        <translation>Read error</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="467"/>
         <source>Unable to read file %1</source>
-        <translation>Невозможно прочитать файл %1</translation>
+        <translation>Unable to read file %1</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="511"/>
         <source>Error</source>
-        <translation>Ошибка</translation>
+        <translation>Error</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="512"/>
         <source>Can&apos;t write to file %1:
 %2</source>
-        <translation>Невозможно запись в файл %1 %2</translation>
+        <translation>Can&apos;t write to file %1:
+%2</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="547"/>
         <source>File changed</source>
-        <translation>Файл изменен</translation>
+        <translation>File changed</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="548"/>
         <source>The file has been edited
 Do you want to commit your changes?</source>
-        <translation>Файл был отредактирован
-Вы хотите сохранить изменения?</translation>
+        <translation>The file has been edited
+Do you want to commit your changes?</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="570"/>
         <source>Manufacturer</source>
-        <translation>Производитель</translation>
+        <translation>Manufacturer</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="571"/>
         <source>Model</source>
-        <translation>Модель</translation>
+        <translation>Model</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="572"/>
         <source>Cost</source>
-        <translation>Цена</translation>
+        <translation>Cost</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="573"/>
         <source>Socket</source>
-        <translation>Сокет</translation>
+        <translation>Socket</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="574"/>
         <source>Number of cores</source>
-        <translation>Количество ядер</translation>
+        <translation>Number of cores</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="575"/>
         <source>Clock frequency</source>
-        <translation>Тактовая частота</translation>
+        <translation>Clock frequency</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="576"/>
         <source>Memory type</source>
-        <translation>Тип памяти</translation>
+        <translation>Memory type</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="577"/>
         <source>Memory clock speed</source>
-        <translation>Тактовая частота памяти</translation>
+        <translation>Memory clock speed</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="632"/>
         <source>%1[*]</source>
-        <translation>%1</translation>
+        <translation>%1[*]</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="727"/>
         <source>English</source>
-        <translation>Русский</translation>
+        <translation>English</translation>
     </message>
     <message>
         <source>&amp;%1 %2</source>
@@ -336,7 +337,7 @@ Do you want to commit your changes?</source>
     </message>
     <message>
         <source>lng</source>
-        <translation type="vanished">Русский</translation>
+        <translation type="vanished">English</translation>
     </message>
     <message>
         <location filename="mainwindow.cpp" line="730"/>
@@ -345,7 +346,7 @@ Do you want to commit your changes?</source>
     </message>
     <message>
         <source>language_name</source>
-        <translation type="vanished">Русский</translation>
+        <translation type="vanished">English</translation>
     </message>
 </context>
 </TS>

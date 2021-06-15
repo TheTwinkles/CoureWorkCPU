@@ -5,6 +5,8 @@
 
 #include <QMainWindow>
 #include <QTableWidgetItem>
+#include <QTranslator>
+#include <QActionGroup>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,6 +28,9 @@ private slots:
     void action_add_triggered();
     void action_edit_triggered();
     void action_delete_triggered();
+
+    void action_aboutProgram_triggered();
+    void action_aboutAuthor_triggered();
 
     void lineEditSearch_editingFinished();
 
@@ -52,6 +57,12 @@ private:
 
     customList list; //список для хранения данных
 
+    QActionGroup *languageActionGroup;
+
+    QTranslator qtLngTranslator;
+    QString qmPath;
+    QString active_lang;
+
     void saveSettings(QString locale, QPoint pos,QSize dim);
     void loadSettings();
 
@@ -67,5 +78,10 @@ private:
     QString croppedFileName(const QString& FullFilename);
 
     int number_of_datastrings(const QString& filename); // счет кол-ва строк с данными в файле
+
+    void set_language(QString locale);
+    void switchLanguage();
+    void createLanguageMenu();
+
 };
 #endif // MAINWINDOW_HPP

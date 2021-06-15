@@ -20,7 +20,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>Поиск</string>
+         <string>Search</string>
         </property>
        </widget>
       </item>
@@ -67,7 +67,6 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="action_Language"/>
    </widget>
    <widget class="QMenu" name="menu_About">
     <property name="title">
