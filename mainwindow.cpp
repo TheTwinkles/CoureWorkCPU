@@ -71,6 +71,8 @@ MainWindow::MainWindow(QWidget *parent)
     qmPath = qmPath = qApp->applicationDirPath() + "/translations";
     createLanguageMenu();
 
+    set_language(active_lang);
+
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 
     int static filenum = 0; //номер untitled файла
@@ -417,12 +419,12 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     if (may_be_save())
     {
-        saveSettings("us_US", pos(), size());
+        saveSettings(active_lang, pos(), size());
         event->accept();
     }
     else
     {
-        saveSettings("us_US", pos(), size());
+        saveSettings(active_lang, pos(), size());
         event->ignore();
     }
 }
@@ -675,71 +677,40 @@ void MainWindow::switchLanguage()
 
 void MainWindow::createLanguageMenu()
 {
-//    languageActionGroup = new QActionGroup(this);
-
-//    connect(languageActionGroup, &QActionGroup::triggered, this, &MainWindow::switchLanguage);
-
-//    QDir dir(qmPath);
-
-//        QStringList fileNames = dir.entryList(QStringList("*.qm"));
-
-//        for(int i = 0; i < fileNames.size(); ++i)
-//        {
-//                QString locale = fileNames[i];
-//                locale.remove(0,locale.indexOf('.') - 5); //ищем символ "_", удаляем начало
-//                locale.truncate(locale.lastIndexOf(('.')));
-
-//                if (qtLngTranslator.load(fileNames[i], qmPath))
-//                {
-//                    QString language = qtLngTranslator.tr("lng");
-
-//                    QAction *action = new QAction(tr("%1").arg(language), this); //tr - метод переводчик разыскивает
-//                    //- нажимаемая кнопка.
-//                    action->setCheckable(true);
-//                    action->setData(locale);
-//                    ui->menu_Settings->addAction(action);
-//                    languageActionGroup->addAction(action);
-
-//                    if (locale == active_lang)
-//                    {
-//                        action->setChecked(true);
-//                    }
-//                }
-//        }
     languageActionGroup = new QActionGroup(this);
-        connect(languageActionGroup, &QActionGroup::triggered,
-                this, &MainWindow::switchLanguage);
+    connect(languageActionGroup, &QActionGroup::triggered,
+                        this, &MainWindow::switchLanguage);
 
-        QDir dir(qmPath);
+    QDir dir(qmPath);
 
-        QStringList fileNames =
-                dir.entryList(QStringList("coursework_*.qm"));
+    QStringList fileNames = dir.entryList(QStringList("coursework_*.qm"));
 
-        for (int i = 0; i < fileNames.size(); i++)
+    for (int i = 0; i < fileNames.size(); i++)
+    {
+        QString locale = fileNames[i];
+        locale.remove(0, locale.indexOf('_') + 1);
+        locale.truncate(locale.lastIndexOf('.'));
+
+        QTranslator translator;
+        translator.load(fileNames[i], qmPath);
+
+        QString language = translator.translate("MainWindow", "English");
+
+        QAction *action = new QAction(tr("%1")
+                                     .arg(language),
+                                     this);
+
+        action->setCheckable(true);
+        action->setData(locale);
+
+        ui->menu_Settings->addAction(action);
+
+        languageActionGroup->addAction(action);
+
+        if (locale == active_lang)
         {
-            QString locale = fileNames[i];
-            locale.remove(0, locale.indexOf('_') + 1);
-            locale.truncate(locale.lastIndexOf('.'));
-
-            QTranslator translator;
-            translator.load(fileNames[i], qmPath);
-
-            QString language = translator.translate("MainWindow",
-                                                    "English");
-
-            QAction *action = new QAction(tr("%1")
-                                          .arg(language),
-                                          this);
-
-            action->setCheckable(true);
-            action->setData(locale);
-
-            ui->menu_Settings->addAction(action);
-
-            languageActionGroup->addAction(action);
-
-            if (language == "English")
-                action->setChecked(true);
+            action->setChecked(true);
         }
+    }
 
 }
