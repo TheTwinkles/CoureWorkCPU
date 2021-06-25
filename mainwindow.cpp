@@ -3,6 +3,8 @@
 
 #include "cpu.hpp"
 #include "dialogwindow.hpp"
+#include "mytablewidgetitem.hpp"
+#include "tablewidget.hpp"
 
 #include <string>
 #include <iostream>
@@ -66,14 +68,16 @@ MainWindow::MainWindow(QWidget *parent)
     //связывание сигнала изменения ячейки в таблице и слота item_edited
     connect(ui->tableWidget, &QTableWidget::cellChanged, this, &MainWindow::item_edited);
 
-    loadSettings();
+    ui->tableWidget->setSortingEnabled(true); //включаем сортировку для столбцов
 
-    qmPath = qmPath = qApp->applicationDirPath() + "/translations";
-    createLanguageMenu();
+    loadSettings(); //вызов функции загрузки настроек
 
-    set_language(active_lang);
+    qmPath = qApp->applicationDirPath() + "/translations"; //устанавливаем путь к папке с переводами
+    createLanguageMenu(); //создаем меню выбора языка
 
-    ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
+    set_language(active_lang); //устанавливаем язык приложения
+
+    ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows); //устанавливаем режим выделения только строк при выборе
 
     int static filenum = 0; //номер untitled файла
 
@@ -112,6 +116,8 @@ void MainWindow::action_open_triggered()
             return;
         }
         setCurrentFile(str); //устанавливаем в названии имя открытого файла
+
+        ui->tableWidget->horizontalHeader()->show();
 
         createTableHeader(); //создаем заголовок таблицы
 
@@ -157,6 +163,7 @@ bool MainWindow::action_save_triggered()
     }
 }
 
+
 /*Блок действий меню Edit-----------------------------------------------------*/
 
 //отработка триггера действия добавления данных
@@ -170,7 +177,10 @@ void MainWindow::action_add_triggered()
 
     if(dlgwin.result() == DialogWindow::Rejected)
     {
-        ui->tableWidget->horizontalHeader()->hide();
+        if (ui->tableWidget->rowCount() == 0)
+        {
+            ui->tableWidget->horizontalHeader()->hide();
+        }
         isEdited = false;
         return; //если пользователь нажимает cancel
     }
@@ -268,6 +278,7 @@ void MainWindow::action_delete_triggered()
         ui->tableWidget->horizontalHeader()->hide();
 }
 
+
 /*Блок действий меню About----------------------------------------------------*/
 
 //отработка триггера действия выведения данных о программе
@@ -311,6 +322,7 @@ void MainWindow::lineEditSearch_editingFinished()
                     createTableItem(i);
     }
 }
+
 
 /*Блок контекстного меню и его действий---------------------------------------*/
 
@@ -431,31 +443,35 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 //------------------------------------------------------------------------------
 
-//метод сохранение настроек программы
+//метод для сохранения настроек программы
 void MainWindow::saveSettings(QString locale, QPoint pos, QSize dim)
 {
-    QSettings settings("settings.ini",QSettings::IniFormat);
-    settings.beginGroup("Settings");
-    settings.setValue("language", locale);
-    settings.endGroup();
-    settings.beginGroup("WindowGeometry");
-    settings.setValue("pos", pos);
-    settings.setValue("dim", dim);
+    QSettings settings("settings.ini", QSettings::IniFormat); //создаем файл для настроек и объект для обращения к этому файлу
+
+    settings.beginGroup("Settings"); //начало группы настроек "Settings"
+    settings.setValue("language", locale); //сохраняем язык
+    settings.endGroup(); //закрываем группу "Settings"
+
+    settings.beginGroup("WindowGeometry"); //начало группы настроек "WindowGeometry"
+    settings.setValue("pos", pos); //сохраняем позицию окна
+    settings.setValue("dim", dim); //сохраняем размеры окна
+    settings.endGroup(); //закрываем группу "WindowGeometry"
 }
 
+//метод для загрузки настроек программы
 void MainWindow::loadSettings()
 {
-    QSettings settings("settings.ini", QSettings::IniFormat);
-    settings.beginGroup("WindowGeometry");
-    resize(settings.value("dim", QSize(1000,1000)).toSize());
-    move(settings.value("pos", QPoint(200, 200)).toPoint());
-    settings.endGroup();
-    settings.beginGroup("Settings");
-    active_lang = settings.value("language").toString();
-    settings.endGroup();
+    QSettings settings("settings.ini", QSettings::IniFormat); //создаем файл для настроек и объект для обращения к этому файлу
+
+    settings.beginGroup("WindowGeometry"); //начало группы настроек "WindowGeometry"
+    resize(settings.value("dim", QSize(1000,1000)).toSize()); //устанавливаем размеры окна
+    move(settings.value("pos", QPoint(200, 200)).toPoint()); //устанавливаем позицию окна
+    settings.endGroup(); //закрываем группу "WindowGeometry"
+
+    settings.beginGroup("Settings"); //начало группы настроек "Settings"
+    active_lang = settings.value("language").toString(); //устанавливаем язык приложения
+    settings.endGroup(); //закрываем группу "Settings"
 }
-
-
 
 //метод обрабатывающий файл при открытии
 void MainWindow::openFile(const QString &fileName)
@@ -539,10 +555,10 @@ bool MainWindow::saveFile(const QString &fileName)
     return true;
 }
 
-//"захочет ли пользователь сохранить данные в текущем файле при открытии нового?"
+//"захочет ли пользователь сохранить данные в текущем файле при ...?"
 bool MainWindow::may_be_save()
 {
-    if (isEdited) //если какая-либо ячейка таблицы отредактирована
+    if (isEdited) //если какая-либо позиция таблицы отредактирована
     {
         QMessageBox::StandardButton ret;
         ret = QMessageBox::warning(this,
@@ -584,36 +600,38 @@ void MainWindow::createTableHeader()
 //создает строку заполненную данными в таблице
 void MainWindow::createTableItem(int i, bool new_item)
 {
-    const int num_of_param = 8;
+    const int num_of_param = 8; //количество столбцов
 
-
-    int pos;
-    if(new_item){
+    int pos; //позиция добавляемого/редактируемого элемента
+    if(new_item) //если элемент добавляют, то он добавляется в конец таблицы
+    {
         pos = ui->tableWidget->rowCount();
         ui->tableWidget->setRowCount(ui->tableWidget->rowCount()+1);}
-    else{
+    else //иначе позиция = номер отредактированной строки
+    {
         pos = i;
     }
 
+    QTableWidgetItem *Item[num_of_param]; //массив ячеек для строки таблицы
 
-    QTableWidgetItem *Item[num_of_param];
-
+    //ячейки заполняются из списка
     Item[0] = new QTableWidgetItem(QString::fromStdString(list[i]->cpu.getManufacturer()));
     Item[1] = new QTableWidgetItem(QString::fromStdString(list[i]->cpu.getModel()));
-    Item[2] = new QTableWidgetItem(QString::fromStdString(std::to_string(list[i]->cpu.getCost())));
+    Item[2] = new MyTableWidgetItem(QString::number(list[i]->cpu.getCost()));
     Item[3] = new QTableWidgetItem(QString::fromStdString(list[i]->cpu.getSocket()));
-    Item[4] = new QTableWidgetItem(QString::fromStdString(std::to_string(list[i]->cpu.getCore_num())));
-    Item[5] = new QTableWidgetItem(QString::fromStdString(std::to_string(list[i]->cpu.getProc_speed())));
+    Item[4] = new MyTableWidgetItem(QString::number(list[i]->cpu.getCore_num()));
+    Item[5] = new MyTableWidgetItem(QString::number(list[i]->cpu.getProc_speed()));
     Item[6] = new QTableWidgetItem(QString::fromStdString(list[i]->cpu.getMem_type()));
-    Item[7] = new QTableWidgetItem(QString::fromStdString(std::to_string(list[i]->cpu.getMem_freq())));
+    Item[7] = new MyTableWidgetItem(QString::number(list[i]->cpu.getMem_freq()));
 
+    //таблица заполняется данными
     for (int j = 0; j < num_of_param; j++)
     {
         ui->tableWidget->setItem(pos, j, Item[j]);
     }
 }
 
-//устанавливает в название окна название текущего открытого файла в этом окна
+//устанавливает в название окна название текущего открытого файла в этом окне
 void MainWindow::setCurrentFile(const QString &filename)
 {
     currentFileName = filename;
@@ -657,42 +675,47 @@ int MainWindow::number_of_datastrings(const QString& filename)
     return ctn; //возвращаем кол-во строк в файле
 }
 
-
+//метод для уставновки конктреного языка в интерфейсе приложения
 void MainWindow::set_language(QString locale)
 {
-    if (locale.isEmpty()) return;
-        if (!qtLngTranslator.load("coursework_" + locale, qmPath))
+    if (locale.isEmpty()) return; //если нет "локали", то return
+        if (!qtLngTranslator.load("coursework_" + locale, qmPath)) //если не получается получить доступ к файлу с переводами
         {
             return;
         }
-        active_lang = locale;
-        qApp->installTranslator(&qtLngTranslator);
-        ui->retranslateUi(this);
+        active_lang = locale; //активный язык окна = локали
+        qApp->installTranslator(&qtLngTranslator); //устанавливаем перевод
+        ui->retranslateUi(this); //отрисовываем интерфейс в соответствии с переводом
+        createTableHeader(); //создаем заголовок таблицы
+        ui->tableWidget->horizontalHeader()->hide();
+        ui->tableWidget->horizontalHeader()->show();
 }
 
+//метод для смены языка приложения
 void MainWindow::switchLanguage()
 {
-    set_language(languageActionGroup->checkedAction()->data().toString());
+    set_language(languageActionGroup->checkedAction()->data().toString()); //смена языка
 }
 
+//метод для создания меню языков
 void MainWindow::createLanguageMenu()
 {
-    languageActionGroup = new QActionGroup(this);
+    languageActionGroup = new QActionGroup(this); //создаем группу действий
     connect(languageActionGroup, &QActionGroup::triggered,
-                        this, &MainWindow::switchLanguage);
+                        this, &MainWindow::switchLanguage); //связываем триггер действия в меню с методом смены языка
 
-    QDir dir(qmPath);
+    QDir dir(qmPath); //создаем объект папки с переводами
 
-    QStringList fileNames = dir.entryList(QStringList("coursework_*.qm"));
+    QStringList fileNames = dir.entryList(QStringList("coursework_*.qm")); //создаем список файлов с переводами
 
     for (int i = 0; i < fileNames.size(); i++)
     {
-        QString locale = fileNames[i];
-        locale.remove(0, locale.indexOf('_') + 1);
-        locale.truncate(locale.lastIndexOf('.'));
+        QString locale = fileNames[i]; //устанавливаем локаль
+        locale.remove(0, locale.indexOf('_') + 1); //вырезаем из локали coursework_
+        locale.truncate(locale.lastIndexOf('.')); //выразем .qm
 
         QTranslator translator;
-        translator.load(fileNames[i], qmPath);
+        translator.load(fileNames[i], qmPath); //загружаем перевод
 
         QString language = translator.translate("MainWindow", "English");
 

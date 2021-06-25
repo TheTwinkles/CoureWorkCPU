@@ -13,13 +13,17 @@ SOURCES += \
     customlist.cpp \
     dialogwindow.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    mytablewidgetitem.cpp \
+    tablewidget.cpp
 
 HEADERS += \
     cpu.hpp \
     customlist.hpp \
     dialogwindow.hpp \
-    mainwindow.hpp
+    mainwindow.hpp \
+    mytablewidgetitem.hpp \
+    tablewidget.hpp
 
 FORMS += \
     dialogwindow.ui \

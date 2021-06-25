@@ -1,3 +1,9 @@
+/*!
+    \file
+    \brief Заголовочный файл с описанием класса DialogWindow
+
+    Данный файл содержит в себе определение класса DialogWindow и основных методов для работы с ним
+*/
 #ifndef DIALOGWINDOW_H
 #define DIALOGWINDOW_H
 
@@ -6,13 +12,22 @@
 namespace Ui {
 class DialogWindow;
 }
+/*!
+    \brief Класс DialogWindow
 
+    Класс описывает диалоговое окно и содержит соответствующие методы для работы с ним
+*/
 class DialogWindow : public QDialog
 {
     Q_OBJECT
 
 public:
+    /*!
+     * \brief Конструктор диалогового окна
+     * \param[in] parent Виджет-родитель
+     */
     explicit DialogWindow(QWidget *parent = nullptr);
+    /// Деструктор по умолчанию
     ~DialogWindow();
 
     // геттеры и сеттеры

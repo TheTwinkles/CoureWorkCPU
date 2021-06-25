@@ -55,6 +55,10 @@ public:
      */
     void addToList(CPU &adCPU);
 
+    /*!
+     * \brief Метод удаления элемента из списка
+     * \param[in] i номер удаляемого элемента
+     */
     void deleteFromList(int i);
 
 };
